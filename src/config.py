@@ -8,6 +8,11 @@ from logging.handlers import RotatingFileHandler
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_BOT_PARSE_MODE = 'HTML'
 
+# Настройки бэкенда
+BACKEND_URL = os.getenv('BACKEND_URL')
+BACKEND_TOKEN = os.getenv('BACKEND_TOKEN')
+AUTH_HEADERS = {'Authorization': BACKEND_TOKEN}
+
 # Контактная почта для сообщений
 CONTACT_EMAIL_IN_MESSAGE = os.getenv('CONTACT_EMAIL_IN_MESSAGE', '')
 
