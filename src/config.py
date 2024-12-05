@@ -4,9 +4,11 @@ import sys
 from logging import StreamHandler
 from logging.handlers import RotatingFileHandler
 
+# Настройки телеграм бота
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_BOT_PARSE_MODE = 'HTML'
 
+# Контактная почта для сообщений
 CONTACT_EMAIL_IN_MESSAGE = os.getenv('CONTACT_EMAIL_IN_MESSAGE', '')
 
 # Timeout session
@@ -16,10 +18,10 @@ TIMEOUT_SESSION = 300
 LJUST_PASS_DEFAULT = 6
 LJUST_DOT_DEFAULT = 15
 
-# Max len group name
+# Максимальная длина статьи
 MAX_LEN_GROUP_NAME = 15
 
-# ID user param
+# Администраторы
 ADMIN_ID = []
 
 # Количество попыток удаления сообщений
