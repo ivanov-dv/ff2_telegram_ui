@@ -23,49 +23,11 @@ class TelegramSettings(BaseModel):
 class User(BaseModel):
     id: int
     username: str
-    email: Optional[str]
-    first_name: Optional[str]
-    last_name: Optional[str]
-    date_joined: Optional[datetime]
-    last_login: Optional[datetime]
-    core_settings: Optional[CoreSettings]
-    telegram_settings: Optional[TelegramSettings]
-    spaces: Optional[List[Space]]
-
-
-if __name__ == '__main__':
-
-    d = {
-        "id": 2,
-        "username": "regular-use",
-        "email": "",
-        "first_name": "",
-        "last_name": "",
-        "date_joined": "2024-12-05T13:12:55.592012Z",
-        "last_login": None,
-        "core_settings": {
-            "user": "regular-use",
-            "current_space": {
-                "id": 1,
-                "name": "regular-use"
-            },
-            "current_month": 12,
-            "current_year": 2024
-        },
-        "telegram_settings": {
-            "user": "regular-use",
-            "id_telegram": 777,
-            "telegram_only": True,
-            "joint_chat": None
-        },
-        "spaces": [
-            {
-                "id": 1,
-                "name": "regular-use"
-            }
-        ]
-    }
-
-
-    user = User(**d)
-    print(user)
+    email: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    date_joined: Optional[datetime] = None
+    last_login: Optional[datetime] = None
+    core_settings: Optional[CoreSettings] = None
+    telegram_settings: Optional[TelegramSettings] = None
+    spaces: Optional[List[Space]] = None
