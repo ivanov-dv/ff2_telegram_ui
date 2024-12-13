@@ -1,4 +1,4 @@
-from src.config import CONTACT_EMAIL_IN_MESSAGE
+from config import CONTACT_EMAIL_IN_MESSAGE
 
 START_TEXT_FOR_NEW_USER = (
     'Привет!\n'

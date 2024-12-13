@@ -2,28 +2,31 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from config import TELEGRAM_BOT_TOKEN, TELEGRAM_BOT_PARSE_MODE
-# from handlers import (
-#     main_handlers,
+from handlers import (
+    main_handlers,
 #     transaction_handlers,
 #     registration_handlers,
 #     choose_period_handlers,
 #     settings_handlers,
 #     get_id_handlers
-# )
-from src.messages.errors import UNEXPECTED_ERROR
+)
+from messages.errors import UNEXPECTED_ERROR
 
 logger = logging.getLogger(__name__)
 bot = Bot(
     token=TELEGRAM_BOT_TOKEN,
-    parse_mode=TELEGRAM_BOT_PARSE_MODE
+    default=DefaultBotProperties(parse_mode=TELEGRAM_BOT_PARSE_MODE)
 )
 dp = Dispatcher(
     storage=MemoryStorage()
 )
-# dp.include_routers()
+dp.include_routers(
+    main_handlers.router
+)
 
 
 async def main():
