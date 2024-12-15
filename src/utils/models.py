@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
@@ -6,6 +8,7 @@ from datetime import datetime
 class Space(BaseModel):
     id: int
     name: str
+    owner_username: str
 
 class CoreSettings(BaseModel):
     user: str
@@ -31,3 +34,26 @@ class User(BaseModel):
     core_settings: Optional[CoreSettings] = None
     telegram_settings: Optional[TelegramSettings] = None
     spaces: Optional[List[Space]] = None
+
+
+class SummaryDetail(BaseModel):
+    id: int
+    space: Space
+    period_month: int
+    period_year: int
+    type_transaction: str
+    group_name: str
+    plan_value: Decimal
+    fact_value: Decimal
+    created_at: datetime
+    updated_at: datetime
+
+
+class Summary(BaseModel):
+    sum_income_plan: Decimal
+    sum_income_fact: Decimal
+    sum_expense_plan: Decimal
+    sum_expense_fact: Decimal
+    balance_plan: Decimal
+    balance_fact: Decimal
+    summary: list[SummaryDetail]

@@ -3,7 +3,7 @@ from aiogram.types import CallbackQuery, Message, TelegramObject
 from typing import Callable, Dict, Any, Awaitable
 
 import messages.texts
-from engine import client
+from engine import backend_client
 from utils import keyboards
 
 
@@ -20,7 +20,7 @@ class AuthMessageMiddleware(BaseMiddleware):
         data: Dict[str, Any]
     ) -> Any:
         # Получение пользователя.
-        user = await client.get_user(event.from_user.id)
+        user = await backend_client.get_user(event.from_user.id)
 
         # Если пользователь не зарегистрирован,
         # отправляется предложение регистрации.
@@ -51,7 +51,7 @@ class AuthCallbackMiddleware(BaseMiddleware):
             return await handler(event, data)
 
         # Получение пользователя.
-        user = await client.get_user(event.from_user.id)
+        user = await backend_client.get_user(event.from_user.id)
 
         # Если пользователь не зарегистрирован,
         # отправляется предложение регистрации.

@@ -6,8 +6,11 @@ from aiogram.fsm.context import FSMContext
 
 import messages.main_texts as main_texts
 import messages.errors as errors_texts
-from engine import client
+from engine import backend_client
+from messages.main_texts import get_summary_text
+from messages.texts import GENERAL_DESCRIPTION
 from utils import keyboards
+from utils.fsm import CreateGroupState, DeleteGroupState, AddTransaction
 from utils.middlewares import AuthMessageMiddleware, AuthCallbackMiddleware
 
 logger = logging.getLogger(__name__)
@@ -33,14 +36,14 @@ async def start(message: types.Message, state: FSMContext):
     await state.clear()
 
     # Получение пользователя.
-    user = await client.get_user(message.from_user.id)
+    user = await backend_client.get_user(message.from_user.id)
 
     # Если период не выбран, предлагает выбрать.
     if not (user.core_settings.current_month and
             user.core_settings.current_year):
         await message.answer(
             main_texts.CHOOSE_PERIOD,
-            reply_markup=keyboards.SettingsKb().choose_period_list())
+            reply_markup=keyboards.SettingsKb.choose_period_list())
 
     # Если период выбран, выводит начальное сообщение.
     else:
@@ -52,7 +55,7 @@ async def start(message: types.Message, state: FSMContext):
                 current_month=user.core_settings.current_month,
                 current_year=user.core_settings.current_year
             ),
-            reply_markup=keyboards.WorkWithBase().main())
+            reply_markup=keyboards.WorkWithBase.main())
 
 
 @router.callback_query(F.data == 'start')
@@ -67,14 +70,15 @@ async def start_callback(callback: types.CallbackQuery, state: FSMContext):
     await state.clear()
 
     # Получение пользователя.
-    user = await client.get_user(callback.from_user.id)
+    user = await backend_client.get_user(callback.from_user.id)
 
     # Если период не выбран, предлагает выбрать.
     if not (user.core_settings.current_month and
             user.core_settings.current_year):
         await callback.message.edit_text(
             main_texts.CHOOSE_PERIOD,
-            reply_markup=keyboards.SettingsKb().choose_period_list())
+            reply_markup=keyboards.SettingsKb.choose_period_list()
+        )
 
     # Если период выбран, выводит начальное сообщение.
     else:
@@ -86,7 +90,7 @@ async def start_callback(callback: types.CallbackQuery, state: FSMContext):
                 current_month=user.core_settings.current_month,
                 current_year=user.core_settings.current_year
             ),
-            reply_markup=keyboards.WorkWithBase().main()
+            reply_markup=keyboards.WorkWithBase.main()
         )
 
 
@@ -98,11 +102,11 @@ async def add_registration(callback: types.CallbackQuery, state: FSMContext):
     await state.clear()
 
     # Получение пользователя.
-    user = await client.create_user(callback.from_user.id)
+    user = await backend_client.create_user(callback.from_user.id)
 
     # Если пользователь создан успешно, отображение главного экрана.
     if user:
-        user = await client.get_user(callback.from_user.id)
+        user = await backend_client.get_user(callback.from_user.id)
         await callback.message.edit_text(
             main_texts.MAIN_TEXT.format(
                 first_name=callback.from_user.first_name,
@@ -111,14 +115,12 @@ async def add_registration(callback: types.CallbackQuery, state: FSMContext):
                 current_month=user.core_settings.current_month,
                 current_year=user.core_settings.current_year
             ),
-            reply_markup=keyboards.WorkWithBase().main()
+            reply_markup=keyboards.WorkWithBase.main()
         )
 
     # Если пользователь не создан, сообщение об ошибке.
     else:
-        await callback.message.edit_text(
-            f'{errors_texts.CREATE_USER_ERROR}'
-        )
+        await callback.message.edit_text(errors_texts.CREATE_USER_ERROR)
 
 
 @router.callback_query(F.data == 'choose_period')
@@ -131,10 +133,10 @@ async def choose_period_callback(
     # Очистка состояний.
     await state.clear()
 
-    # Отправка сообщения c выбором периодов.
+    # Отправка сообщения с выбором периодов.
     await callback.message.edit_text(
         main_texts.CHOOSE_PERIOD,
-        reply_markup=keyboards.SettingsKb().choose_period_list()
+        reply_markup=keyboards.SettingsKb.choose_period_list()
     )
 
 
@@ -148,6 +150,98 @@ async def settings_callback(callback: types.CallbackQuery, state: FSMContext):
     # Отправка сообщения с настройками.
     await callback.message.edit_text(
         main_texts.SETTINGS,
-        reply_markup=keyboards.SettingsKb().settings()
+        reply_markup=keyboards.SettingsKb.settings()
     )
 
+
+@router.callback_query(F.data == 'look_base')
+async def look_summary(callback: types.CallbackQuery, state: FSMContext):
+    """Просмотр отчета за определенный период."""
+
+    # Очистка состояний.
+    await state.clear()
+
+    # Получение summary от бэкенда.
+    summary = await backend_client.get_summary(callback.from_user.id)
+
+    # Если summary пустое, отправка сообщения об отсутствии данных.
+    if summary is None:
+        await callback.message.edit_text(
+            main_texts.EMPTY_SUMMARY,
+            reply_markup=keyboards.WorkWithBase.main()
+        )
+
+    # Вывод отчета о summary.
+    else:
+        await callback.message.edit_text(
+            get_summary_text(summary),
+            reply_markup=keyboards.FamilyFinanceKb.go_to_main()
+        )
+
+
+@router.callback_query(F.data == 'create_group')
+async def create_group(callback: types.CallbackQuery, state: FSMContext):
+    """Создание статьи доходов или расходов."""
+
+    # Очистка состояний.
+    await state.clear()
+
+    # Установка состояния для создания статьи.
+    await state.set_state(CreateGroupState.get_type)
+
+    # Отправка сообщения о выборе типа статьи.
+    await callback.message.edit_text(
+        main_texts.CREATE_GROUP,
+        reply_markup=keyboards.WorkWithBase.choose_type()
+    )
+
+
+@router.callback_query(F.data == 'delete_group')
+async def delete_group(callback: types.CallbackQuery, state: FSMContext):
+    """Удаление статьи доходов или расходов."""
+
+    # Очистка состояний.
+    await state.clear()
+
+    # Установка состояния для удаления статьи.
+    await state.set_state(DeleteGroupState.get_type)
+
+    # Отправка сообщения о выборе типа статьи.
+    await callback.message.edit_text(
+        main_texts.DELETE_GROUP,
+        reply_markup=keyboards.WorkWithBase.choose_type()
+    )
+
+
+@router.callback_query(F.data == 'add_transaction')
+async def add_transaction(callback: types.CallbackQuery, state: FSMContext):
+    """Добавление транзакции."""
+
+    # Очистка состояний.
+    await state.clear()
+
+    # Установка состояния для добавления транзакции.
+    await state.set_state(AddTransaction.get_type)
+
+    # Отправка сообщения о выборе типа статьи.
+    await callback.message.edit_text(
+        main_texts.ADD_TRANSACTION,
+        reply_markup=keyboards.WorkWithBase.choose_type()
+    )
+
+
+@router.callback_query(F.data == 'general_description')
+async def show_general_description(
+        callback: types.CallbackQuery,
+        state: FSMContext
+):
+    """Показать общее описание."""
+
+    # Очистка состояний.
+    await state.clear()
+
+    # Отправка общего описания.
+    await callback.message.edit_text(
+        GENERAL_DESCRIPTION,
+        reply_markup=keyboards.FamilyFinanceKb.go_to_main()
+    )

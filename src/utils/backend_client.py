@@ -1,8 +1,10 @@
 import aiohttp
 import logging
 
-from config import AUTH_HEADERS
-from utils.models import User
+from async_lru import alru_cache
+
+from config import AUTH_HEADERS, BACKEND_GET_USER_TTL
+from utils.models import User, Summary
 
 logger = logging.getLogger(__name__)
 
@@ -31,10 +33,11 @@ class BackendClient:
                     }
                 )
                 return User(**(await response.json()))
-            except Exception as err:
-                logger.exception(err)
+            except Exception as e:
+                logger.exception(e)
                 return None
 
+    @alru_cache(ttl=BACKEND_GET_USER_TTL)
     async def get_user(self, id_telegram: int | str) -> User | None:
         """
         Получение пользователя по Telegram ID.
@@ -55,8 +58,8 @@ class BackendClient:
                 elif 'results' in response_json and response_json['results']:
                     return User(**response_json['results'][0])
                 return None
-            except Exception as err:
-                logger.exception(err)
+            except Exception as e:
+                logger.exception(e)
                 return None
 
     async def update_user(self, id_telegram, **kwargs):
@@ -75,7 +78,22 @@ class BackendClient:
         pass
 
     async def get_summary(self, id_telegram):
-        pass
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            try:
+                user = await self.get_user(id_telegram)
+                if not user:
+                    return None
+                response = await session.get(
+                    f'{self.backend_url}users/{user.id}/summary/'
+                )
+                response_json = await response.json()
+                if not response_json.get('summary'):
+                    return None
+                return Summary(**(await response.json()))
+            except Exception as e:
+                logger.exception(e)
+                return None
+
 
     async def add_transaction(self, id_telegram, transaction):
         pass

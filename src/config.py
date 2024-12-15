@@ -13,15 +13,18 @@ BACKEND_URL = os.getenv('BACKEND_URL')
 BACKEND_TOKEN = os.getenv('BACKEND_TOKEN')
 AUTH_HEADERS = {'Authorization': BACKEND_TOKEN}
 
+# Настройки кеширования
+BACKEND_GET_USER_TTL = 600
+
 # Контактная почта для сообщений
 CONTACT_EMAIL_IN_MESSAGE = os.getenv('CONTACT_EMAIL_IN_MESSAGE', '')
 
 # Timeout session
 TIMEOUT_SESSION = 300
 
-# ljust default for full review table
-LJUST_PASS_DEFAULT = 6
-LJUST_DOT_DEFAULT = 15
+# Настройки заполнения строк для отображения Summary
+LJUST_PASS_DEFAULT = 6  # Макс кол-во символов в столбцах 'План' и 'Факт'
+LJUST_DOT_DEFAULT = 15  # Макс кол-во символов в столбце 'Статья'
 
 # Максимальная длина статьи
 MAX_LEN_GROUP_NAME = 15
