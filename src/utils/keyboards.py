@@ -1,8 +1,8 @@
 from aiogram.types import InlineKeyboardButton
-from aiogram.types.login_url import LoginUrl
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from utils.keyboard_generators import GeneratorKb
+from utils.models import Summary
 
 
 class BaseKb:
@@ -67,8 +67,8 @@ class WorkWithBase(FamilyFinanceKb):
         return builder.as_markup()
 
     @classmethod
-    def choose_group_name(cls, data_list):
-        builder = GeneratorKb.generate_from_list(data_list)
+    def choose_group_name(cls, summary: Summary):
+        builder = GeneratorKb.generate_choose_group_name(summary)
         builder.row(cls.button_back_to_start)
         builder.adjust(1)
         return builder.as_markup()

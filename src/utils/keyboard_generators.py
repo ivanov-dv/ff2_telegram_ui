@@ -2,6 +2,8 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, KeyboardBuilder
 from datetime import date
 from typing import Union
 
+from utils.models import Summary
+
 
 class GeneratorKb:
     """Класс для генерации клавиатур."""
@@ -145,6 +147,18 @@ class GeneratorKb:
             builder.button(
                 text=f'ID {list_data[i][1]}',
                 callback_data=f'{list_data[i][0]}'
+            )
+        return builder
+
+    @staticmethod
+    def generate_choose_group_name(
+            summary: Summary
+    ) -> InlineKeyboardBuilder:
+        builder = InlineKeyboardBuilder()
+        for group in summary.summary:
+            builder.button(
+                text=group.group_name,
+                callback_data=f'group_id_{group.id}'
             )
         return builder
 

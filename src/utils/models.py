@@ -59,3 +59,20 @@ class Summary(BaseModel):
     balance_plan: Decimal
     balance_fact: Decimal
     summary: list[SummaryDetail]
+
+
+class CreatedGroup(BaseModel):
+    id: int
+    type_transaction: str
+    group_name: str
+    plan_value: Decimal
+    fact_value: Decimal
+
+
+class Transaction(BaseModel):
+    id: int
+    type_transaction: str
+    group_name: str
+    description: str
+    value_transaction: Decimal
+    author: int
