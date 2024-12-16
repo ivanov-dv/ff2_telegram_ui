@@ -3,7 +3,7 @@ import logging
 
 from async_lru import alru_cache
 
-from config import AUTH_HEADERS, BACKEND_GET_USER_TTL
+from config import AUTH_HEADERS, BACKEND_GET_USER_ID_TTL
 from utils.models import User, Summary
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,29 @@ class BackendClient:
                 logger.exception(e)
                 return None
 
-    @alru_cache(ttl=BACKEND_GET_USER_TTL)
+    @alru_cache(ttl=BACKEND_GET_USER_ID_TTL)
+    async def get_user_id(self, id_telegram):
+        """
+        Получение ID пользователя по Telegram ID.
+
+        :param id_telegram: Telegram ID пользователя.
+        :return: str | None
+        """
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            try:
+                response = await session.get(
+                    f'{self.backend_url}users/'
+                    f'get-id/?telegram_id={id_telegram}'
+                )
+                response_json = await response.json()
+                if 'id' not in response_json:
+                    logger.error('Неожиданная структура ответа сервера.')
+                    return None
+                return response_json['id']
+            except Exception as e:
+                logger.exception(e)
+                return None
+
     async def get_user(self, id_telegram: int | str) -> User | None:
         """
         Получение пользователя по Telegram ID.
@@ -52,9 +74,7 @@ class BackendClient:
                 )
                 response_json = await response.json()
                 if 'results' not in response_json:
-                    logger.error(
-                        'Неожиданная структура ответа сервера.'
-                    )
+                    logger.error('Неожиданная структура ответа сервера.')
                 elif 'results' in response_json and response_json['results']:
                     return User(**response_json['results'][0])
                 return None
@@ -80,11 +100,11 @@ class BackendClient:
     async def get_summary(self, id_telegram):
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
-                user = await self.get_user(id_telegram)
-                if not user:
+                user_id = await self.get_user_id(id_telegram)
+                if not user_id:
                     return None
                 response = await session.get(
-                    f'{self.backend_url}users/{user.id}/summary/'
+                    f'{self.backend_url}users/{user_id}/summary/'
                 )
                 response_json = await response.json()
                 if not response_json.get('summary'):
@@ -93,7 +113,6 @@ class BackendClient:
             except Exception as e:
                 logger.exception(e)
                 return None
-
 
     async def add_transaction(self, id_telegram, transaction):
         pass

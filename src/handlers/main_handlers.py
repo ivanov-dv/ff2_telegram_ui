@@ -39,11 +39,13 @@ async def start(message: types.Message, state: FSMContext):
     user = await backend_client.get_user(message.from_user.id)
 
     # Если период не выбран, предлагает выбрать.
-    if not (user.core_settings.current_month and
-            user.core_settings.current_year):
+    if not (
+        user.core_settings.current_month and user.core_settings.current_year
+    ):
         await message.answer(
             main_texts.CHOOSE_PERIOD,
-            reply_markup=keyboards.SettingsKb.choose_period_list())
+            reply_markup=keyboards.SettingsKb.choose_period_list()
+        )
 
     # Если период выбран, выводит начальное сообщение.
     else:
@@ -55,7 +57,8 @@ async def start(message: types.Message, state: FSMContext):
                 current_month=user.core_settings.current_month,
                 current_year=user.core_settings.current_year
             ),
-            reply_markup=keyboards.WorkWithBase.main())
+            reply_markup=keyboards.WorkWithBase.main()
+        )
 
 
 @router.callback_query(F.data == 'start')

@@ -10,11 +10,13 @@ class Space(BaseModel):
     name: str
     owner_username: str
 
+
 class CoreSettings(BaseModel):
     user: str
     current_space: Space
     current_year: int = Field(ge=2000, le=2200)
     current_month: int = Field(ge=1, le=12)
+
 
 class TelegramSettings(BaseModel):
     user: str

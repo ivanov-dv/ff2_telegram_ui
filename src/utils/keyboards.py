@@ -168,7 +168,9 @@ class SettingsKb(FamilyFinanceKb):
 
     @classmethod
     def manage_linked_accounts(cls):
-        builder = InlineKeyboardBuilder(markup=cls.buttons_manage_linked_accounts)
+        builder = InlineKeyboardBuilder(
+            markup=cls.buttons_manage_linked_accounts
+        )
         return builder.as_markup()
 
     @classmethod
@@ -205,4 +207,3 @@ class SettingsKb(FamilyFinanceKb):
         builder.row(cls.button_back_to_settings)
         builder.adjust(1)
         return builder.as_markup()
-

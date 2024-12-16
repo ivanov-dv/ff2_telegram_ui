@@ -19,12 +19,12 @@ class AuthMessageMiddleware(BaseMiddleware):
         event: Message,
         data: Dict[str, Any]
     ) -> Any:
-        # Получение пользователя.
-        user = await backend_client.get_user(event.from_user.id)
+        # Получение id пользователя.
+        user_id = await backend_client.get_user_id(event.from_user.id)
 
         # Если пользователь не зарегистрирован,
         # отправляется предложение регистрации.
-        if not user:
+        if not user_id:
             return await event.answer(
                 messages.texts.START_TEXT_FOR_NEW_USER,
                 reply_markup=keyboards.RegistrationKb().add_registration()
@@ -51,11 +51,11 @@ class AuthCallbackMiddleware(BaseMiddleware):
             return await handler(event, data)
 
         # Получение пользователя.
-        user = await backend_client.get_user(event.from_user.id)
+        user_id = await backend_client.get_user_id(event.from_user.id)
 
         # Если пользователь не зарегистрирован,
         # отправляется предложение регистрации.
-        if not user:
+        if not user_id:
             return await event.message.edit_text(
                 messages.texts.START_TEXT_FOR_NEW_USER,
                 reply_markup=keyboards.RegistrationKb().add_registration()
