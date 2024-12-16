@@ -38,7 +38,7 @@ class BackendClient:
                 return None
 
     @alru_cache(ttl=BACKEND_GET_USER_ID_TTL)
-    async def get_user_id(self, id_telegram):
+    async def get_user_id(self, id_telegram: str | int):
         """
         Получение ID пользователя по Telegram ID.
 
@@ -49,13 +49,13 @@ class BackendClient:
             try:
                 response = await session.get(
                     f'{self.backend_url}users/'
-                    f'get-id/?telegram_id={id_telegram}'
+                    f'get-id/?id_telegram={id_telegram}'
                 )
                 response_json = await response.json()
-                if 'id' not in response_json:
+                if 'user_id' not in response_json:
                     logger.error('Неожиданная структура ответа сервера.')
                     return None
-                return response_json['id']
+                return response_json['user_id']
             except Exception as e:
                 logger.exception(e)
                 return None
