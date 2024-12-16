@@ -45,17 +45,12 @@ class WorkWithBase(FamilyFinanceKb):
         text='Расход', callback_data='expense')
     button_general_description = InlineKeyboardButton(
         text='Описание', callback_data='general_description')
-    button_web_app = InlineKeyboardButton(
-        text='Сайт',
-        login_url=LoginUrl(url='https://ff2.zapto.org/users/telegram-auth/')
-    )
 
     buttons_main_menu = [
         [button_edit, button_look],
         [button_create_group, button_delete_group],
         [FamilyFinanceKb.button_choose_period, button_settings],
-        [button_general_description],
-        [button_web_app]
+        [button_general_description]
     ]
     buttons_choose_type = [
         [button_income, button_expense],
