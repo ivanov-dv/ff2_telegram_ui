@@ -11,7 +11,9 @@ from utils.models import (
     Summary,
     CreatedGroup,
     SummaryDetail,
-    Transaction
+    Transaction,
+    CoreSettings,
+    TelegramSettings
 )
 
 logger = logging.getLogger(__name__)
@@ -246,6 +248,40 @@ class BackendClient:
                     }
                 )
                 return Transaction(**(await response.json()))
+            except Exception as e:
+                logger.exception(e)
+                return None
+
+    async def update_core_settings(
+            self,
+            id_telegram: int | str,
+            core_settings: CoreSettings
+    ) -> CoreSettings | None:
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            try:
+                user_id = await self.get_user_id(id_telegram)
+                response = await session.patch(
+                    f'{self.backend_url}users/{user_id}/core-settings/',
+                    json=core_settings.model_dump()
+                )
+                return CoreSettings(**(await response.json()))
+            except Exception as e:
+                logger.exception(e)
+                return None
+
+    async def update_telegram_settings(
+            self,
+            id_telegram: int | str,
+            telegram_settings: TelegramSettings
+    ) -> TelegramSettings | None:
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            try:
+                user_id = await self.get_user_id(id_telegram)
+                response = await session.patch(
+                    f'{self.backend_url}users/{user_id}/telegram-settings/',
+                    json=telegram_settings.model_dump()
+                )
+                return TelegramSettings(**(await response.json()))
             except Exception as e:
                 logger.exception(e)
                 return None

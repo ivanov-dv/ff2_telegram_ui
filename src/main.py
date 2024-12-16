@@ -9,7 +9,7 @@ from handlers import (
     main_handlers,
     transaction_handlers,
 #     registration_handlers,
-#     choose_period_handlers,
+    choose_period_handlers,
 #     settings_handlers,
 #     get_id_handlers
 )
@@ -21,7 +21,8 @@ dp = Dispatcher(
 )
 dp.include_routers(
     main_handlers.router,
-    transaction_handlers.router
+    transaction_handlers.router,
+    choose_period_handlers.router
 )
 
 
