@@ -14,7 +14,7 @@ BACKEND_TOKEN = os.getenv('BACKEND_TOKEN')
 AUTH_HEADERS = {'Authorization': BACKEND_TOKEN}
 
 # Настройки кеширования
-BACKEND_GET_USER_ID_TTL = 600
+BACKEND_GET_USER_ID_TTL = 10
 
 # Контактная почта для сообщений
 CONTACT_EMAIL_IN_MESSAGE = os.getenv('CONTACT_EMAIL_IN_MESSAGE', '')
