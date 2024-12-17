@@ -18,20 +18,16 @@ async def choose_period(callback: types.CallbackQuery, state: FSMContext):
     # Очистка состояний.
     await state.clear()
 
-    # Получение текущего состояния пользователя.
-    user = await backend_client.get_user(callback.from_user.id)
-
     # Распаковка нового периода
     *_, new_month_period, new_year_period = callback.data.split('_')
-
-    # Установка нового периода в настройки пользователя.
-    user.core_settings.current_month = int(new_month_period)
-    user.core_settings.current_year = int(new_year_period)
 
     # Обновление настроек пользователя в БД.
     new_core_settings = await backend_client.update_core_settings(
         callback.from_user.id,
-        user.core_settings
+        {
+            'current_month': int(new_month_period),
+            'current_year': int(new_year_period)
+        }
     )
 
     # Если настройки не были изменены, выдаем сообщение об ошибке.

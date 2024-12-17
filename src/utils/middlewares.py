@@ -57,10 +57,10 @@ class AuthCallbackMiddleware(BaseMiddleware):
     """
 
     async def __call__(
-        self,
-        handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
-        event: CallbackQuery,
-        data: Dict[str, Any]
+            self,
+            handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+            event: CallbackQuery,
+            data: Dict[str, Any]
     ) -> Any:
         # Пропускаем проверку, если пользователь регистрируется.
         if event.data == 'registration':
@@ -81,7 +81,9 @@ class AuthCallbackMiddleware(BaseMiddleware):
         if user.core_settings.current_space is None:
             return await event.message.edit_text(
                 messages.texts.CHOOSE_SPACE,
-                reply_markup=keyboards.SettingsKb.generate_choose_period()
+                reply_markup=keyboards.SettingsKb.generate_choose_space(
+                    user.spaces + user.available_linked_spaces
+                )
             )
 
         # Если current_month или current_year не установлены,
