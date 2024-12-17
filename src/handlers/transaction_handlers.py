@@ -140,9 +140,9 @@ async def create_group_get_plan_value(
             user = await backend_client.get_user(message.from_user.id)
 
             # Если есть чат для совместной работы, отправка сообщения в него.
-            if user.telegram_settings.joint_chat:
+            if user.core_settings.current_space.linked_chat:
                 await bot.send_message(
-                    user.telegram_settings.joint_chat,
+                    user.core_settings.current_space.linked_chat,
                     transaction_texts.NOTICE_TO_JOINT_CHAT_CREATE_GROUP.format(
                         first_name=message.from_user.first_name,
                         telegram_id=message.from_user.id,
@@ -249,9 +249,9 @@ async def delete_group_get_name(callback: types.CallbackQuery,
         user = await backend_client.get_user(callback.from_user.id)
 
         # Если есть чат для совместной работы, отправка сообщения в него.
-        if user.telegram_settings.joint_chat:
+        if user.core_settings.current_space.linked_chat:
             await bot.send_message(
-                user.telegram_settings.joint_chat,
+                user.core_settings.current_space.linked_chat,
                 transaction_texts.NOTICE_TO_JOINT_CHAT_DELETE_GROUP(
                     first_name=callback.from_user.first_name,
                     telegram_id=callback.from_user.id,
@@ -427,9 +427,9 @@ async def add_transaction_get_description(
         )
 
         # Если есть чат для совместной работы, отправка сообщения в него.
-        if user.telegram_settings.joint_chat:
+        if user.core_settings.current_space.linked_chat:
             await bot.send_message(
-                user.telegram_settings.joint_chat,
+                user.core_settings.current_space.linked_chat,
                 transaction_texts.NOTICE_TO_JOINT_CHAT_ADD_TRANSACTION.format(
                     first_name=message.from_user.first_name,
                     id_telegram=message.from_user.id,
