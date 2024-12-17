@@ -13,9 +13,9 @@ class Space(BaseModel):
 
 class CoreSettings(BaseModel):
     user: str
-    current_space: Space
-    current_year: int = Field(ge=2000, le=2200)
-    current_month: int = Field(ge=1, le=12)
+    current_space: Space | None
+    current_year: int | None = Field(ge=2000, le=2200)
+    current_month: int | None = Field(ge=1, le=12)
 
 
 class TelegramSettings(BaseModel):

@@ -156,7 +156,7 @@ class SettingsKb(FamilyFinanceKb):
         return builder.as_markup()
 
     @classmethod
-    def choose_period_list(cls):
+    def generate_choose_period(cls):
         builder = GeneratorKb.generate_for_choose_period()
         builder.row(cls.button_back_to_start)
         return builder.as_markup()
@@ -179,7 +179,7 @@ class SettingsKb(FamilyFinanceKb):
     def generate_choose_space(cls, id_telegram, data_list):
         button = InlineKeyboardButton(
             text='Моя база',
-            callback_data=f'{id_telegram}'
+            callback_data=f'choose_space_{id_telegram}'
         )
         builder = GeneratorKb.generate_choose_space(data_list)
         builder.add(button)

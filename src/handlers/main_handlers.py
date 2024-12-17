@@ -11,7 +11,10 @@ from messages.main_texts import get_summary_text
 from messages.texts import GENERAL_DESCRIPTION
 from utils import keyboards
 from utils.fsm import CreateGroupState, DeleteGroupState, AddTransaction
-from utils.middlewares import AuthMessageMiddleware, AuthCallbackMiddleware
+from utils.middlewares import (
+    AuthMessageMiddleware,
+    AuthCallbackMiddleware
+)
 
 logger = logging.getLogger(__name__)
 router = Router()
@@ -44,7 +47,7 @@ async def start(message: types.Message, state: FSMContext):
     ):
         await message.answer(
             main_texts.CHOOSE_PERIOD,
-            reply_markup=keyboards.SettingsKb.choose_period_list()
+            reply_markup=keyboards.SettingsKb.generate_choose_period()
         )
 
     # Если период выбран, выводит начальное сообщение.
@@ -80,7 +83,7 @@ async def start_callback(callback: types.CallbackQuery, state: FSMContext):
             user.core_settings.current_year):
         await callback.message.edit_text(
             main_texts.CHOOSE_PERIOD,
-            reply_markup=keyboards.SettingsKb.choose_period_list()
+            reply_markup=keyboards.SettingsKb.generate_choose_period()
         )
 
     # Если период выбран, выводит начальное сообщение.
@@ -139,7 +142,7 @@ async def choose_period_callback(
     # Отправка сообщения с выбором периодов.
     await callback.message.edit_text(
         main_texts.CHOOSE_PERIOD,
-        reply_markup=keyboards.SettingsKb.choose_period_list()
+        reply_markup=keyboards.SettingsKb.generate_choose_period()
     )
 
 

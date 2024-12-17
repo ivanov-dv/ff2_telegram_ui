@@ -19,15 +19,31 @@ class AuthMessageMiddleware(BaseMiddleware):
         event: Message,
         data: Dict[str, Any]
     ) -> Any:
-        # Получение id пользователя.
-        user_id = await backend_client.get_user_id(event.from_user.id)
+        # Получение пользователя.
+        user = await backend_client.get_user(event.from_user.id)
 
         # Если пользователь не зарегистрирован,
         # отправляется предложение регистрации.
-        if not user_id:
+        if not user:
             return await event.answer(
                 messages.texts.START_TEXT_FOR_NEW_USER,
                 reply_markup=keyboards.RegistrationKb().add_registration()
+            )
+
+        # Если space не установлено, сообщение о необходимости выбрать space.
+        if user.core_settings.current_space is None:
+            return await event.answer(
+                messages.texts.CHOOSE_SPACE,
+                reply_markup=keyboards.SettingsKb.generate_choose_period()
+            )
+
+        # Если current_month или current_year не установлены,
+        # сообщение о необходимости выбрать период.
+        if (user.core_settings.current_month is None or
+                user.core_settings.current_year is None):
+            return await event.answer(
+                messages.texts.CHOOSE_PERIOD,
+                reply_markup=keyboards.SettingsKb.generate_choose_period()
             )
 
         # Если пользователь найден, выполняется вызываемое событие.
@@ -51,14 +67,30 @@ class AuthCallbackMiddleware(BaseMiddleware):
             return await handler(event, data)
 
         # Получение пользователя.
-        user_id = await backend_client.get_user_id(event.from_user.id)
+        user = await backend_client.get_user(event.from_user.id)
 
         # Если пользователь не зарегистрирован,
         # отправляется предложение регистрации.
-        if not user_id:
+        if not user:
             return await event.message.edit_text(
                 messages.texts.START_TEXT_FOR_NEW_USER,
                 reply_markup=keyboards.RegistrationKb().add_registration()
+            )
+
+        # Если space не установлено, сообщение о необходимости выбрать space.
+        if user.core_settings.current_space is None:
+            return await event.message.edit_text(
+                messages.texts.CHOOSE_SPACE,
+                reply_markup=keyboards.SettingsKb.generate_choose_period()
+            )
+
+        # Если current_month или current_year не установлены,
+        # сообщение о необходимости выбрать период.
+        if (user.core_settings.current_month is None or
+                user.core_settings.current_year is None):
+            return await event.message.edit_text(
+                messages.texts.CHOOSE_PERIOD,
+                reply_markup=keyboards.SettingsKb.generate_choose_period()
             )
 
         # Если пользователь найден, выполняется вызываемое событие.
