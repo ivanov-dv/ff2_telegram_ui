@@ -2,7 +2,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, KeyboardBuilder
 from datetime import date
 from typing import Union
 
-from utils.models import Summary
+from utils.models import Summary, Space
 
 
 class GeneratorKb:
@@ -140,13 +140,13 @@ class GeneratorKb:
 
     @staticmethod
     def generate_choose_space(
-            list_data: Union[tuple, list]
+            spaces: tuple[Space] | list[Space]
     ) -> InlineKeyboardBuilder:
         builder = InlineKeyboardBuilder()
-        for i in range(len(list_data)):
+        for space in spaces:
             builder.button(
-                text=f'ID {list_data[i][1]}',
-                callback_data=f'{list_data[i][0]}'
+                text=f'{space.name} ({space.owner_username})',
+                callback_data=f'choose_space_{space.id}'
             )
         return builder
 

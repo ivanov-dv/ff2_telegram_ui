@@ -108,25 +108,35 @@ async def add_registration(callback: types.CallbackQuery, state: FSMContext):
     await state.clear()
 
     # Получение пользователя.
-    user = await backend_client.create_user(callback.from_user.id)
+    # Перепроверка, если пользователь зарегистрировался на сайте.
+    user = await backend_client.get_user(callback.from_user.id)
 
-    # Если пользователь создан успешно, отображение главного экрана.
+    # Если пользователь уже зарегистрирован, переходим к главному экрану.
     if user:
-        user = await backend_client.get_user(callback.from_user.id)
-        await callback.message.edit_text(
-            main_texts.MAIN_TEXT.format(
-                first_name=callback.from_user.first_name,
-                user_id=callback.from_user.id,
-                space_name=user.core_settings.current_space.name,
-                current_month=user.core_settings.current_month,
-                current_year=user.core_settings.current_year
-            ),
-            reply_markup=keyboards.WorkWithBase.main()
-        )
+        await start_callback(callback, state)
 
-    # Если пользователь не создан, сообщение об ошибке.
+    # Если пользователь не зарегистрирован, регистрируем.
     else:
-        await callback.message.edit_text(errors_texts.CREATE_USER_ERROR)
+        # Создание пользователя.
+        user = await backend_client.create_user(callback.from_user.id)
+
+        # Если пользователь создан успешно, отображение главного экрана.
+        if user:
+            user = await backend_client.get_user(callback.from_user.id)
+            await callback.message.edit_text(
+                main_texts.MAIN_TEXT.format(
+                    first_name=callback.from_user.first_name,
+                    user_id=callback.from_user.id,
+                    space_name=user.core_settings.current_space.name,
+                    current_month=user.core_settings.current_month,
+                    current_year=user.core_settings.current_year
+                ),
+                reply_markup=keyboards.WorkWithBase.main()
+            )
+
+        # Если пользователь не создан, сообщение об ошибке.
+        else:
+            await callback.message.edit_text(errors_texts.CREATE_USER_ERROR)
 
 
 @router.callback_query(F.data == 'choose_period')

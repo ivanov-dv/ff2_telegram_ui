@@ -12,8 +12,8 @@ from utils.models import (
     CreatedGroup,
     SummaryDetail,
     Transaction,
-    CoreSettings,
-    TelegramSettings
+    TelegramSettings,
+    CoreSettingsUpdate
 )
 
 logger = logging.getLogger(__name__)
@@ -97,6 +97,17 @@ class BackendClient:
 
     async def update_user(self, id_telegram, **kwargs):
         pass
+
+    async def delete_user(self, id_telegram):
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            try:
+                user_id = await self.get_user_id(id_telegram)
+                response = await session.delete(
+                    f'{self.backend_url}users/{user_id}/'
+                )
+                return response.status == 204
+            except Exception as e:
+                logger.exception(e)
 
     async def create_group(
             self,
@@ -255,16 +266,25 @@ class BackendClient:
     async def update_core_settings(
             self,
             id_telegram: int | str,
-            core_settings: CoreSettings
-    ) -> CoreSettings | None:
+            data: dict
+    ) -> CoreSettingsUpdate | None:
+        """
+        Обновление core settings на бэкенде.
+
+        :param id_telegram: Telegram ID пользователя.
+        :param data: Новые данные (один или несколько) для core settings в виде
+        {'current_space_id': 32, 'current_month': 12, 'current_year': 2024}
+
+        :return: CoreSettingsUpdate | None
+        """
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 user_id = await self.get_user_id(id_telegram)
                 response = await session.patch(
                     f'{self.backend_url}users/{user_id}/core-settings/',
-                    json=core_settings.model_dump()
+                    json=data
                 )
-                return CoreSettings(**(await response.json()))
+                return CoreSettingsUpdate(**(await response.json()))
             except Exception as e:
                 logger.exception(e)
                 return None

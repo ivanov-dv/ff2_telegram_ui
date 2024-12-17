@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from utils.keyboard_generators import GeneratorKb
-from utils.models import Summary
+from utils.models import Summary, Space
 
 
 class BaseKb:
@@ -109,7 +109,7 @@ class SettingsKb(FamilyFinanceKb):
     button_back_to_settings = InlineKeyboardButton(
         text='В настройки', callback_data='settings')
     button_choose_base = InlineKeyboardButton(
-        text='Выбрать базу', callback_data='choose_base')
+        text='Выбрать базу', callback_data='choose_space')
     button_delete_registration = InlineKeyboardButton(
         text='Удалить акк', callback_data='registration_delete')
     button_manage_linked_accounts = InlineKeyboardButton(
@@ -176,13 +176,8 @@ class SettingsKb(FamilyFinanceKb):
         return builder.as_markup()
 
     @classmethod
-    def generate_choose_space(cls, id_telegram, data_list):
-        button = InlineKeyboardButton(
-            text='Моя база',
-            callback_data=f'choose_space_{id_telegram}'
-        )
-        builder = GeneratorKb.generate_choose_space(data_list)
-        builder.add(button)
+    def generate_choose_space(cls, spaces: tuple[Space] | list[Space]):
+        builder = GeneratorKb.generate_choose_space(spaces)
         builder.add(cls.button_back_to_settings)
         builder.adjust(1)
         return builder.as_markup()

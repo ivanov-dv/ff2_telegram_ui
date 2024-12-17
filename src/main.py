@@ -8,9 +8,9 @@ from engine import bot
 from handlers import (
     main_handlers,
     transaction_handlers,
-#     registration_handlers,
+    registration_handlers,
     choose_period_handlers,
-#     settings_handlers,
+    settings_handlers,
 #     get_id_handlers
 )
 from messages.errors import UNEXPECTED_ERROR
@@ -22,7 +22,9 @@ dp = Dispatcher(
 dp.include_routers(
     main_handlers.router,
     transaction_handlers.router,
-    choose_period_handlers.router
+    choose_period_handlers.router,
+    settings_handlers.router,
+    registration_handlers.router,
 )
 
 

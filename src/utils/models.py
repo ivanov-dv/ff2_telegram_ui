@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
 
 
@@ -11,9 +11,19 @@ class Space(BaseModel):
     owner_username: str
 
 
+class SpaceFull(Space):
+    available_linked_users: list[int] | None
+
+
 class CoreSettings(BaseModel):
     user: str
     current_space: Space | None
+    current_year: int | None = Field(ge=2000, le=2200)
+    current_month: int | None = Field(ge=1, le=12)
+
+
+class CoreSettingsUpdate(BaseModel):
+    current_space_id: int
     current_year: int | None = Field(ge=2000, le=2200)
     current_month: int | None = Field(ge=1, le=12)
 
@@ -35,7 +45,8 @@ class User(BaseModel):
     last_login: Optional[datetime] = None
     core_settings: Optional[CoreSettings] = None
     telegram_settings: Optional[TelegramSettings] = None
-    spaces: Optional[List[Space]] = None
+    spaces: Optional[list[Space]] = None
+    available_linked_spaces: Optional[list[Space]] = None
 
 
 class SummaryDetail(BaseModel):
