@@ -9,6 +9,7 @@ class Space(BaseModel):
     id: int
     name: str
     owner_username: str
+    linked_chat: str
 
 
 class SpaceFull(Space):
@@ -32,7 +33,6 @@ class TelegramSettings(BaseModel):
     user: str
     id_telegram: Optional[int]
     telegram_only: bool
-    joint_chat: Optional[str]
 
 
 class User(BaseModel):
