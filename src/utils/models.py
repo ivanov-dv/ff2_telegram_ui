@@ -8,6 +8,7 @@ from datetime import datetime
 class Space(BaseModel):
     id: int
     name: str
+    owner_id: int
     owner_username: str
     linked_chat: str
 

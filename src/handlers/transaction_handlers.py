@@ -252,7 +252,7 @@ async def delete_group_get_name(callback: types.CallbackQuery,
         if user.core_settings.current_space.linked_chat:
             await bot.send_message(
                 user.core_settings.current_space.linked_chat,
-                transaction_texts.NOTICE_TO_JOINT_CHAT_DELETE_GROUP(
+                transaction_texts.NOTICE_TO_JOINT_CHAT_DELETE_GROUP.format(
                     first_name=callback.from_user.first_name,
                     telegram_id=callback.from_user.id,
                     current_space=user.core_settings.current_space.name,

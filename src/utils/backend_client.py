@@ -13,7 +13,9 @@ from utils.models import (
     SummaryDetail,
     Transaction,
     TelegramSettings,
-    CoreSettingsUpdate
+    CoreSettingsUpdate,
+    Space,
+    SpaceFull
 )
 
 logger = logging.getLogger(__name__)
@@ -292,16 +294,35 @@ class BackendClient:
     async def update_telegram_settings(
             self,
             id_telegram: int | str,
-            telegram_settings: TelegramSettings
+            data: dict
     ) -> TelegramSettings | None:
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 user_id = await self.get_user_id(id_telegram)
                 response = await session.patch(
                     f'{self.backend_url}users/{user_id}/telegram-settings/',
-                    json=telegram_settings.model_dump()
+                    json=data
                 )
                 return TelegramSettings(**(await response.json()))
             except Exception as e:
                 logger.exception(e)
                 return None
+
+    async def update_space(
+            self,
+            id_telegram: int | str,
+            space_id: int,
+            data: dict
+    ) -> Space | None:
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            try:
+                user_id = await self.get_user_id(id_telegram)
+                response = await session.patch(
+                    f'{self.backend_url}users/{user_id}/spaces/{space_id}/',
+                    json=data
+                )
+                return SpaceFull(**(await response.json()))
+            except Exception as e:
+                logger.exception(e)
+                return None
+

@@ -136,7 +136,10 @@ async def add_registration(callback: types.CallbackQuery, state: FSMContext):
 
         # Если пользователь не создан, сообщение об ошибке.
         else:
-            await callback.message.edit_text(errors_texts.CREATE_USER_ERROR)
+            await callback.message.edit_text(
+                errors_texts.CREATE_USER_ERROR,
+                reply_markup=keyboards.FamilyFinanceKb.go_to_main()
+            )
 
 
 @router.callback_query(F.data == 'choose_period')
