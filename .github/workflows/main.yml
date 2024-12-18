@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  flake8-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+    - name: Run image
+      uses: abatilo/actions-poetry@v2
+      with:
+        poetry-version: 1.8.4
+    - name: Install dependencies
+      run: poetry install
+    - name: Flake8
+      env:
+      run: |
+        poetry run flake8 src/
+    - name: Send deploy webhook
+      run: |
+        curl -L \
+          -H "${{ secrets.SERVER_DEPLOY_TOKEN }}" \
+          "${{ secrets.SERVER_WEBHOOK_URL }}/?repo=ff2_telegram_ui&docker_prod_file=docker-compose.prod.yml"

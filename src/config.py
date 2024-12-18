@@ -8,15 +8,23 @@ from logging.handlers import RotatingFileHandler
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_BOT_PARSE_MODE = 'HTML'
 
+# Настройки бэкенда
+BACKEND_URL = os.getenv('BACKEND_URL')
+BACKEND_TOKEN = os.getenv('BACKEND_TOKEN')
+AUTH_HEADERS = {'Authorization': BACKEND_TOKEN}
+
+# Настройки кеширования
+BACKEND_GET_USER_ID_TTL = 10
+
 # Контактная почта для сообщений
 CONTACT_EMAIL_IN_MESSAGE = os.getenv('CONTACT_EMAIL_IN_MESSAGE', '')
 
 # Timeout session
 TIMEOUT_SESSION = 300
 
-# ljust default for full review table
-LJUST_PASS_DEFAULT = 6
-LJUST_DOT_DEFAULT = 15
+# Настройки заполнения строк для отображения Summary
+LJUST_PASS_DEFAULT = 6  # Макс кол-во символов в столбцах 'План' и 'Факт'
+LJUST_DOT_DEFAULT = 15  # Макс кол-во символов в столбце 'Статья'
 
 # Максимальная длина статьи
 MAX_LEN_GROUP_NAME = 15

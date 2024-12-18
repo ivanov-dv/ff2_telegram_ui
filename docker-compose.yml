@@ -1,0 +1,10 @@
+services:
+  ff2_telegram_ui:
+    container_name: ff2_telegram_ui
+    env_file:
+      - .env
+    build:
+      context: .
+    command: bash -c "cd src && poetry run python3 main.py"
+    volumes:
+      - ./src:/app/src
