@@ -113,7 +113,9 @@ async def add_linked_account(message: types.Message, state: FSMContext):
         # Отправка сообщения об успешном/неуспешном выполнении зарпоса.
         if is_linked_user:
             await message.answer(
-                setting_texts.SUCCESS_LINK_USER,
+                setting_texts.SUCCESS_LINK_USER.format(
+                    id_telegram=telegram_id_link_user
+                ),
                 reply_markup=kb.SettingsKb.back_to_settings()
             )
         else:
