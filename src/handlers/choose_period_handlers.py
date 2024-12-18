@@ -3,7 +3,6 @@ from aiogram.fsm.context import FSMContext
 
 from engine import backend_client
 from messages import choose_period_texts
-from utils.filters import StartWidthFilter
 from utils.keyboards import FamilyFinanceKb
 from handlers.main_handlers import start_callback
 
@@ -11,7 +10,7 @@ router = Router()
 router.message.filter(F.chat.type.in_('private'))
 
 
-@router.callback_query(StartWidthFilter('period_'))
+@router.callback_query(F.data.startswith('period_'))
 async def choose_period(callback: types.CallbackQuery, state: FSMContext):
     """Выбор периода."""
 

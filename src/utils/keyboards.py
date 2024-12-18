@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from utils.keyboard_generators import GeneratorKb
-from utils.models import Summary, Space
+from utils.models import Summary, Space, UserShort
 
 
 class BaseKb:
@@ -169,15 +169,22 @@ class SettingsKb(FamilyFinanceKb):
         return builder.as_markup()
 
     @classmethod
-    def generate_kb_from_list(cls, data_list):
-        builder = GeneratorKb.generate_from_list(data_list)
+    def generate_users_for_unlink(
+            cls,
+            linked_users: list[UserShort] | tuple[UserShort]
+    ):
+        builder = GeneratorKb.generate_users_for_unlink(linked_users)
         builder.row(cls.button_back_to_settings)
         builder.adjust(1)
         return builder.as_markup()
 
     @classmethod
-    def generate_choose_space(cls, spaces: tuple[Space] | list[Space]):
-        builder = GeneratorKb.generate_choose_space(spaces)
+    def generate_choose_space(
+            cls,
+            owner_id,
+            spaces: tuple[Space] | list[Space]
+    ):
+        builder = GeneratorKb.generate_choose_space(owner_id, spaces)
         builder.add(cls.button_back_to_settings)
         builder.adjust(1)
         return builder.as_markup()

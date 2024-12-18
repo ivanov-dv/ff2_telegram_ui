@@ -14,8 +14,7 @@ from utils.models import (
     Transaction,
     TelegramSettings,
     CoreSettingsUpdate,
-    Space,
-    SpaceFull
+    Space
 )
 
 logger = logging.getLogger(__name__)
@@ -107,7 +106,13 @@ class BackendClient:
                 response = await session.delete(
                     f'{self.backend_url}users/{user_id}/'
                 )
-                return response.status == 204
+                if response.status != 204:
+                    logger.error(
+                        'Ошибка удаления пользователя: '
+                        f'{response.status=} {await response.json()}'
+                    )
+                    return False
+                return True
             except Exception as e:
                 logger.exception(e)
 
@@ -218,7 +223,13 @@ class BackendClient:
                 response = await session.delete(
                     f'{self.backend_url}users/{user_id}/summary/{group_id}/'
                 )
-                return response.status == 204
+                if response.status != 204:
+                    logger.error(
+                        'Ошибка удаления статьи: '
+                        f'{response.status=} {await response.json()}'
+                    )
+                    return False
+                return True
             except Exception as e:
                 logger.exception(e)
                 return False
@@ -321,8 +332,52 @@ class BackendClient:
                     f'{self.backend_url}users/{user_id}/spaces/{space_id}/',
                     json=data
                 )
-                return SpaceFull(**(await response.json()))
+                return Space(**(await response.json()))
             except Exception as e:
                 logger.exception(e)
                 return None
 
+    async def link_user_to_space(self, id_telegram, id_space, id_link_user):
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            try:
+                user_id = await self.get_user_id(id_telegram)
+                response = await session.post(
+                    f'{self.backend_url}users/{user_id}/'
+                    f'spaces/{id_space}/link_user/',
+                    json={'id': id_link_user}
+                )
+                if response.status != 200:
+                    logger.error(
+                        f'Ошибка при связывании пользователя с пространством: '
+                        f'{response.status=} {await response.json()}'
+                    )
+                    return False
+                return response.status == 200
+            except Exception as e:
+                logger.exception(e)
+                return False
+
+    async def unlink_user_to_space(
+            self,
+            id_telegram,
+            id_space,
+            id_unlink_user
+    ):
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            try:
+                user_id = await self.get_user_id(id_telegram)
+                response = await session.post(
+                    f'{self.backend_url}users/{user_id}/'
+                    f'spaces/{id_space}/unlink_user/',
+                    json={'id': id_unlink_user}
+                )
+                if response.status != 200:
+                    logger.error(
+                        f'Ошибка при отвязке пользователя от пространства: '
+                        f'{response.status=} {await response.json()}'
+                    )
+                    return False
+                return True
+            except Exception as e:
+                logger.exception(e)
+                return False

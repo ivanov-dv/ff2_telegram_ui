@@ -5,16 +5,21 @@ from typing import Optional
 from datetime import datetime
 
 
+class UserShort(BaseModel):
+    id: int
+    username: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    id_telegram: Optional[int] = None
+
+
 class Space(BaseModel):
     id: int
     name: str
     owner_id: int
     owner_username: str
     linked_chat: str
-
-
-class SpaceFull(Space):
-    available_linked_users: list[int] | None
+    available_linked_users: list[UserShort] | None = None
 
 
 class CoreSettings(BaseModel):
@@ -32,7 +37,7 @@ class CoreSettingsUpdate(BaseModel):
 
 class TelegramSettings(BaseModel):
     user: str
-    id_telegram: Optional[int]
+    id_telegram: Optional[int] = None
     telegram_only: bool
 
 

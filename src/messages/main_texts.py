@@ -79,11 +79,15 @@ def get_summary_text(summary: Summary) -> str:
         f'{(round(summary.sum_income_plan / 1000, 1)):<{LJUST_PASS_DEFAULT}}/ '
         f'{(round(summary.sum_income_fact / 1000, 1)):<{LJUST_PASS_DEFAULT}}\n'
         f'{'Расходы':.<{LJUST_DOT_DEFAULT}} '
-        f'{(round(summary.sum_expense_plan / 1000, 1)):<{LJUST_PASS_DEFAULT}}/ '
-        f'{(round(summary.sum_expense_fact / 1000, 1)):<{LJUST_PASS_DEFAULT}}\n'
+        f'{(round(
+            summary.sum_expense_plan / 1000, 1)):<{LJUST_PASS_DEFAULT}}/ '
+        f'{(round(
+            summary.sum_expense_fact / 1000, 1)):<{LJUST_PASS_DEFAULT}}\n'
         f'{'Сальдо':.<{LJUST_DOT_DEFAULT}} '
-        f'{(round(summary.balance_plan / 1000, 1)):<{LJUST_PASS_DEFAULT}}/ '
-        f'{(round(summary.balance_fact / 1000, 1)):<{LJUST_PASS_DEFAULT}}\n'
+        f'{(round(
+            summary.balance_plan / 1000, 1)):<{LJUST_PASS_DEFAULT}}/ '
+        f'{(round(
+            summary.balance_fact / 1000, 1)):<{LJUST_PASS_DEFAULT}}\n'
         f'</code>'
     )
     return ''.join(text)
