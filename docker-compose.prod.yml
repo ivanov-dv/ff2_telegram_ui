@@ -6,3 +6,4 @@ services:
     build:
       context: .
     command: bash -c "cd src && poetry run python3 main.py"
+    restart: always
