@@ -19,14 +19,12 @@ class Space(BaseModel):
     owner_id: int
     owner_username: str
     linked_chat: str
-    available_linked_users: Optional[list[UserShort]] = Field(
-        default_factory=list
-    )
+    available_linked_users: list[UserShort] | None = None
 
 
 class CoreSettings(BaseModel):
     user: str
-    current_space: Space = Field(default_factory=list)
+    current_space: Space | None
     current_year: int | None = Field(ge=2000, le=2200)
     current_month: int | None = Field(ge=1, le=12)
 
@@ -53,7 +51,7 @@ class User(BaseModel):
     last_login: Optional[datetime] = None
     core_settings: Optional[CoreSettings] = None
     telegram_settings: Optional[TelegramSettings] = None
-    spaces: Optional[list[Space]] = Field(default_factory=list)
+    spaces: Optional[list[Space]] = None
     available_linked_spaces: Optional[list[Space]] = None
 
 
