@@ -11,7 +11,7 @@ from handlers import (
     registration_handlers,
     choose_period_handlers,
     settings_handlers,
-#     get_id_handlers
+    get_id_handlers
 )
 from messages.errors import UNEXPECTED_ERROR
 
@@ -25,6 +25,7 @@ dp.include_routers(
     choose_period_handlers.router,
     settings_handlers.router,
     registration_handlers.router,
+    get_id_handlers.router
 )
 
 
