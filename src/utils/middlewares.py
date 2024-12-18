@@ -84,6 +84,7 @@ class AuthCallbackMiddleware(BaseMiddleware):
             return await event.message.edit_text(
                 messages.texts.CHOOSE_SPACE,
                 reply_markup=keyboards.SettingsKb.generate_choose_space(
+                    user.id,
                     user.spaces + user.available_linked_spaces
                 )
             )
