@@ -1,3 +1,5 @@
+"""Взаимодействие с бэкендом."""
+
 from decimal import Decimal
 
 import aiohttp
@@ -21,6 +23,8 @@ logger = logging.getLogger(__name__)
 
 
 class BackendClient:
+    """Класс для взаимодействия с бэкендом."""
+
     def __init__(self, backend_url: str, token: str, headers: dict = None):
         self.backend_url = backend_url
         self.token = token
@@ -96,10 +100,13 @@ class BackendClient:
                 logger.exception(e)
                 return None
 
-    async def update_user(self, id_telegram, **kwargs):
-        pass
+    async def delete_user(self, id_telegram: int | str):
+        """
+        Удаление пользователя по Telegram ID
 
-    async def delete_user(self, id_telegram):
+        :param id_telegram: Telegram ID пользователя.
+        :return: bool
+        """
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 user_id = await self.get_user_id(id_telegram)
@@ -123,6 +130,15 @@ class BackendClient:
             group_name: str,
             plan_value: Decimal
     ) -> CreatedGroup | None:
+        """
+        Создание статьи.
+
+        :param id_telegram: Telegram ID пользователя.
+        :param type_transaction: Тип транзакции.
+        :param group_name: Название статьи.
+        :param plan_value: Плановое значение.
+        :return: CreatedGroup | None
+        """
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 user_id = await self.get_user_id(id_telegram)
@@ -153,6 +169,13 @@ class BackendClient:
             id_telegram: int | str,
             group_name: str
     ):
+        """
+        Проверка существования статьи по имени.
+
+        :param id_telegram: Telegram ID пользователя.
+        :param group_name: Название статьи.
+        :return: Bool
+        """
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 user_id = await self.get_user_id(id_telegram)
@@ -179,6 +202,13 @@ class BackendClient:
             id_telegram,
             type_transaction: str = None
     ) -> Summary | None:
+        """
+        Получение списка статей.
+
+        :param id_telegram: Telegram ID пользователя.
+        :param type_transaction: Опционально. Тип транзакции.
+        :return: Summary | None
+        """
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 if not type_transaction:
@@ -202,6 +232,13 @@ class BackendClient:
             id_telegram: int | str,
             group_id: int | str
     ) -> SummaryDetail | None:
+        """
+        Получение детальной информации о статье.
+
+        :param id_telegram: Telegram ID пользователя.
+        :param group_id: ID статьи.
+        :return: SummaryDetail | None
+        """
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 user_id = await self.get_user_id(id_telegram)
@@ -213,10 +250,18 @@ class BackendClient:
                 logger.exception(e)
                 return None
 
-    async def update_group(self, id_telegram, group_name):
-        pass
+    async def delete_group(
+            self,
+            id_telegram: int | str,
+            group_id: int | str
+    ) -> bool:
+        """
+        Удаление статьи по Telegram ID и ID статьи.
 
-    async def delete_group(self, id_telegram, group_id) -> bool:
+        :param id_telegram: Telegram ID пользователя.
+        :param group_id: ID статьи.
+        :return: bool
+        """
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 user_id = await self.get_user_id(id_telegram)
@@ -235,6 +280,13 @@ class BackendClient:
                 return False
 
     async def get_summary(self, id_telegram: int | str):
+        """
+        Получение отчета пользователя за период,
+        установленный в базовых настройках.
+
+        :param id_telegram: Telegram ID пользователя.
+        :return: Summary | None
+        """
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 user_id = await self.get_user_id(id_telegram)
@@ -259,6 +311,16 @@ class BackendClient:
             description: str,
             value_transaction: Decimal
     ) -> Transaction | None:
+        """
+        Добавление транзакции.
+
+        :param id_telegram: Telegram ID пользователя.
+        :param type_transaction:  Тип операции.
+        :param group_name: Название статьи.
+        :param description: Описание.
+        :param value_transaction: Значение транзакции.
+        :return: Transaction | None
+        """
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 user_id = await self.get_user_id(id_telegram)
@@ -282,11 +344,11 @@ class BackendClient:
             data: dict
     ) -> CoreSettingsUpdate | None:
         """
-        Обновление core settings на бэкенде.
+        Обновление core settings.
 
         :param id_telegram: Telegram ID пользователя.
         :param data: Новые данные (один или несколько) для core settings в виде
-        {'current_space_id': 32, 'current_month': 12, 'current_year': 2024}
+        {'current_space_id': 32, 'current_month': 12, 'current_year': 2024}.
 
         :return: CoreSettingsUpdate | None
         """
@@ -307,6 +369,13 @@ class BackendClient:
             id_telegram: int | str,
             data: dict
     ) -> TelegramSettings | None:
+        """
+        Обновление Telegram settings.
+
+        :param id_telegram: Telegram ID пользователя.
+        :param data: Новые данные для Telegram settings в словаре.
+        :return: TelegramSettings | None
+        """
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 user_id = await self.get_user_id(id_telegram)
@@ -325,6 +394,14 @@ class BackendClient:
             space_id: int,
             data: dict
     ) -> Space | None:
+        """
+        Обновление пространства пользователя.
+
+        :param id_telegram: Telegram ID пользователя.
+        :param space_id: ID пространства.
+        :param data: Новые данные для Space в словаре.
+        :return: Space | None
+        """
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 user_id = await self.get_user_id(id_telegram)
@@ -337,7 +414,20 @@ class BackendClient:
                 logger.exception(e)
                 return None
 
-    async def link_user_to_space(self, id_telegram, id_space, id_link_user):
+    async def link_user_to_space(
+            self,
+            id_telegram: int | str,
+            id_space: int | str,
+            id_link_user: int | str
+    ):
+        """
+        Связывание пользователя с пространством.
+
+        :param id_telegram: Telegram ID пользователя.
+        :param id_space: ID пространства.
+        :param id_link_user: ID пользователя для связывания.
+        :return: Bool
+        """
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 user_id = await self.get_user_id(id_telegram)
@@ -359,10 +449,18 @@ class BackendClient:
 
     async def unlink_user_to_space(
             self,
-            id_telegram,
-            id_space,
-            id_unlink_user
+            id_telegram: int | str,
+            id_space: int | str,
+            id_unlink_user: int | str
     ):
+        """
+        Отключение пользователя от пространства.
+
+        :param id_telegram: Telegram ID пользователя.
+        :param id_space: ID пространства.
+        :param id_unlink_user: ID пользователя для отключения.
+        :return: Bool
+        """
         async with aiohttp.ClientSession(headers=self.headers) as session:
             try:
                 user_id = await self.get_user_id(id_telegram)

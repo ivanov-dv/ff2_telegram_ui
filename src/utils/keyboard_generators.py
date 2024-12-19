@@ -1,3 +1,5 @@
+"""Генерация кнопок для клавиатуры."""
+
 from aiogram.utils.keyboard import InlineKeyboardBuilder, KeyboardBuilder
 from datetime import date
 
@@ -128,25 +130,16 @@ class GeneratorKb:
         return builder.adjust(2)
 
     @staticmethod
-    def generate_spaces(spaces: list | tuple) -> KeyboardBuilder:
-        builder = InlineKeyboardBuilder()
-        for i in range(len(spaces)):
-            builder.button(
-                text=f'{spaces[i]}',
-                callback_data=f'table_{spaces[i]}'
-            )
-        return builder.adjust(2)
-
-    @staticmethod
     def generate_choose_space(
             owner_id: int,
             spaces: tuple[Space] | list[Space]
     ) -> InlineKeyboardBuilder:
+        """Генерация кнопок для выбора пространства."""
         builder = InlineKeyboardBuilder()
         for space in spaces:
             owner = space.owner_username
             if int(space.owner_id) == int(owner_id):
-                owner = 'Моя'
+                owner = 'Моя'  # Если пространство принадлежит пользователю.
             builder.button(
                 text=f'{space.name} ({owner})',
                 callback_data=f'choose_space_{space.id}'
@@ -157,6 +150,7 @@ class GeneratorKb:
     def generate_choose_group_name(
             summary: Summary
     ) -> InlineKeyboardBuilder:
+        """Генерация кнопок для выбора названия статьи."""
         builder = InlineKeyboardBuilder()
         for group in summary.summary:
             builder.button(
@@ -169,6 +163,10 @@ class GeneratorKb:
     def generate_users_for_unlink(
             linked_users: list[UserShort] | tuple[UserShort]
     ) -> InlineKeyboardBuilder:
+        """
+        Генерация кнопок пользователей (подключенных)
+        для их отключения от пространства.
+        """
         builder = InlineKeyboardBuilder()
         for user in linked_users:
             builder.button(

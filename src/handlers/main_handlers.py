@@ -1,3 +1,5 @@
+"""Хэндлеры главного меню."""
+
 import logging
 
 from aiogram import Router, F, types
@@ -60,7 +62,7 @@ async def start(message: types.Message, state: FSMContext):
                 current_month=user.core_settings.current_month,
                 current_year=user.core_settings.current_year
             ),
-            reply_markup=keyboards.WorkWithBase.main()
+            reply_markup=keyboards.WorkWithBase.main_menu()
         )
 
 
@@ -96,7 +98,7 @@ async def start_callback(callback: types.CallbackQuery, state: FSMContext):
                 current_month=user.core_settings.current_month,
                 current_year=user.core_settings.current_year
             ),
-            reply_markup=keyboards.WorkWithBase.main()
+            reply_markup=keyboards.WorkWithBase.main_menu()
         )
 
 
@@ -131,7 +133,7 @@ async def add_registration(callback: types.CallbackQuery, state: FSMContext):
                     current_month=user.core_settings.current_month,
                     current_year=user.core_settings.current_year
                 ),
-                reply_markup=keyboards.WorkWithBase.main()
+                reply_markup=keyboards.WorkWithBase.main_menu()
             )
 
         # Если пользователь не создан, сообщение об ошибке.
@@ -187,7 +189,7 @@ async def look_summary(callback: types.CallbackQuery, state: FSMContext):
     if summary is None:
         await callback.message.edit_text(
             main_texts.EMPTY_SUMMARY,
-            reply_markup=keyboards.WorkWithBase.main()
+            reply_markup=keyboards.WorkWithBase.main_menu()
         )
 
     # Вывод отчета о summary.

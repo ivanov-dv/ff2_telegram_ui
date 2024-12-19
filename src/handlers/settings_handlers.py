@@ -1,3 +1,5 @@
+"""Хэндлеры настроек приложения."""
+
 import logging
 
 from aiogram import Router, F, types
@@ -238,7 +240,7 @@ async def accept_choose_base(callback: types.CallbackQuery, state: FSMContext):
                             current_month=user.core_settings.current_month,
                             current_year=user.core_settings.current_year
                         ),
-                        reply_markup=keyboards.WorkWithBase.main()
+                        reply_markup=keyboards.WorkWithBase.main_menu()
                     )
 
                 # Если настройки не были изменены, сообщение об ошибке + лог.
@@ -332,7 +334,7 @@ async def joint_chat_add(message: types.Message, state: FSMContext):
                 current_month=user.core_settings.current_month,
                 current_year=user.core_settings.current_year
             ),
-            reply_markup=keyboards.WorkWithBase.main()
+            reply_markup=keyboards.WorkWithBase.main_menu()
         )
 
     # Если изменения не внесены, уведомляем пользователя.
@@ -372,7 +374,7 @@ async def joint_chat_delete(callback: types.CallbackQuery):
                 current_month=user.core_settings.current_month,
                 current_year=user.core_settings.current_year
             ),
-            reply_markup=kb.WorkWithBase.main()
+            reply_markup=kb.WorkWithBase.main_menu()
         )
 
     # Если изменения не внесены, уведомляем пользователя.

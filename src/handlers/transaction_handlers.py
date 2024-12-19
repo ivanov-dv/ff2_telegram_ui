@@ -1,3 +1,5 @@
+"""Хэндлеры выполнения транзакций."""
+
 from decimal import Decimal
 
 from aiogram import F, Router, types
@@ -133,7 +135,7 @@ async def create_group_get_plan_value(
                     type_value=type_value,
                     value=round(validated_value / 1000, 3)
                 ),
-                reply_markup=kb.WorkWithBase.main()
+                reply_markup=kb.WorkWithBase.main_menu()
             )
 
             # Получение настроек пользователя.
@@ -242,7 +244,7 @@ async def delete_group_get_name(callback: types.CallbackQuery,
                 group_name=group.group_name,
                 type_value=type_value
             ),
-            reply_markup=kb.WorkWithBase.main()
+            reply_markup=kb.WorkWithBase.main_menu()
         )
 
         # Получение данных о пользователе.
@@ -423,7 +425,7 @@ async def add_transaction_get_description(
                 new_value=round(transaction.value_transaction / 1000, 2),
                 description=transaction.description
             ),
-            reply_markup=kb.WorkWithBase.main()
+            reply_markup=kb.WorkWithBase.main_menu()
         )
 
         # Если есть чат для совместной работы, отправка сообщения в него.
