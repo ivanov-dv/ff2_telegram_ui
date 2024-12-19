@@ -1,3 +1,5 @@
+"""Модели для валидации входных данных от бэкенда."""
+
 from decimal import Decimal
 
 from pydantic import BaseModel, Field
@@ -6,6 +8,8 @@ from datetime import datetime
 
 
 class UserShort(BaseModel):
+    """Усеченная модель пользователя."""
+
     id: int
     username: str
     first_name: Optional[str] = None
@@ -14,6 +18,8 @@ class UserShort(BaseModel):
 
 
 class Space(BaseModel):
+    """Модель пространства(базы) пользователя."""
+
     id: int
     name: str
     owner_id: int
@@ -23,6 +29,8 @@ class Space(BaseModel):
 
 
 class CoreSettings(BaseModel):
+    """Модель базовых настроек пользователя."""
+
     user: str
     current_space: Space | None
     current_year: int | None = Field(ge=2000, le=2200)
@@ -30,18 +38,24 @@ class CoreSettings(BaseModel):
 
 
 class CoreSettingsUpdate(BaseModel):
+    """Модель для обновления базовых настроек пользователя."""
+
     current_space_id: int
     current_year: int | None = Field(ge=2000, le=2200)
     current_month: int | None = Field(ge=1, le=12)
 
 
 class TelegramSettings(BaseModel):
+    """Модель Telegram настроек пользователя."""
+
     user: str
     id_telegram: Optional[int] = None
     telegram_only: bool
 
 
 class User(BaseModel):
+    """Полная модель пользователя."""
+
     id: int
     username: str
     email: Optional[str] = None
@@ -56,6 +70,8 @@ class User(BaseModel):
 
 
 class SummaryDetail(BaseModel):
+    """Модель для представления отдельной статьи в суммарном отчете."""
+
     id: int
     space: Space
     period_month: int
@@ -69,6 +85,8 @@ class SummaryDetail(BaseModel):
 
 
 class Summary(BaseModel):
+    """Модель для представления суммарного отчета."""
+
     sum_income_plan: Decimal
     sum_income_fact: Decimal
     sum_expense_plan: Decimal
@@ -79,6 +97,8 @@ class Summary(BaseModel):
 
 
 class CreatedGroup(BaseModel):
+    """Модель для создания статьи."""
+
     id: int
     type_transaction: str
     group_name: str
@@ -87,6 +107,8 @@ class CreatedGroup(BaseModel):
 
 
 class Transaction(BaseModel):
+    """Модель для транзакции."""
+
     id: int
     type_transaction: str
     group_name: str
