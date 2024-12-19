@@ -7,11 +7,11 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
 import messages.main_texts as main_texts
-import messages.errors as errors_texts
 from engine import backend_client
 from messages.main_texts import get_summary_text
 from messages.texts import GENERAL_DESCRIPTION
 from utils import keyboards
+from utils.exceptions import BackendError
 from utils.fsm import CreateGroupState, DeleteGroupState, AddTransaction
 from utils.middlewares import (
     AuthMessageMiddleware,
@@ -41,7 +41,15 @@ async def start(message: types.Message, state: FSMContext):
     await state.clear()
 
     # Получение пользователя.
-    user = await backend_client.get_user(message.from_user.id)
+    try:
+        user = await backend_client.get_user(message.from_user.id)
+
+    # Отправка ошибки.
+    except BackendError as e:
+        await message.answer(
+            str(e),
+            reply_markup=keyboards.FamilyFinanceKb.go_to_main()
+        )
 
     # Если период не выбран, предлагает выбрать.
     if not (
@@ -78,7 +86,15 @@ async def start_callback(callback: types.CallbackQuery, state: FSMContext):
     await state.clear()
 
     # Получение пользователя.
-    user = await backend_client.get_user(callback.from_user.id)
+    try:
+        user = await backend_client.get_user(callback.from_user.id)
+
+    # Отправка ошибки.
+    except BackendError as e:
+        await callback.message.edit_text(
+            str(e),
+            reply_markup=keyboards.FamilyFinanceKb.go_to_main()
+        )
 
     # Если период не выбран, предлагает выбрать.
     if not (user.core_settings.current_month and
@@ -109,21 +125,27 @@ async def add_registration(callback: types.CallbackQuery, state: FSMContext):
     # Очистка состояний.
     await state.clear()
 
-    # Получение пользователя.
-    # Перепроверка, если пользователь зарегистрировался на сайте.
-    user = await backend_client.get_user(callback.from_user.id)
+    try:
+        # Получение пользователя.
+        # Перепроверка, если пользователь зарегистрировался на сайте.
+        user = await backend_client.get_user(callback.from_user.id)
 
-    # Если пользователь уже зарегистрирован, переходим к главному экрану.
-    if user:
-        await start_callback(callback, state)
+        # Если пользователь уже зарегистрирован, переходим к главному экрану.
+        if user:
+            await start_callback(callback, state)
+    except BackendError as e:
+        await callback.message.edit_text(
+            str(e),
+            reply_markup=keyboards.FamilyFinanceKb.go_to_main()
+        )
 
     # Если пользователь не зарегистрирован, регистрируем.
     else:
-        # Создание пользователя.
-        user = await backend_client.create_user(callback.from_user.id)
+        try:
+            # Создание пользователя.
+            await backend_client.create_user(callback.from_user.id)
 
-        # Если пользователь создан успешно, отображение главного экрана.
-        if user:
+            # Отображение главного экрана.
             user = await backend_client.get_user(callback.from_user.id)
             await callback.message.edit_text(
                 main_texts.MAIN_TEXT.format(
@@ -137,9 +159,9 @@ async def add_registration(callback: types.CallbackQuery, state: FSMContext):
             )
 
         # Если пользователь не создан, сообщение об ошибке.
-        else:
+        except BackendError as e:
             await callback.message.edit_text(
-                errors_texts.CREATE_USER_ERROR,
+                str(e),
                 reply_markup=keyboards.FamilyFinanceKb.go_to_main()
             )
 
@@ -182,20 +204,28 @@ async def look_summary(callback: types.CallbackQuery, state: FSMContext):
     # Очистка состояний.
     await state.clear()
 
-    # Получение summary от бэкенда.
-    summary = await backend_client.get_summary(callback.from_user.id)
+    try:
+        # Получение summary от бэкенда.
+        summary = await backend_client.get_summary(callback.from_user.id)
 
-    # Если summary пустое, отправка сообщения об отсутствии данных.
-    if summary is None:
-        await callback.message.edit_text(
-            main_texts.EMPTY_SUMMARY,
-            reply_markup=keyboards.WorkWithBase.main_menu()
-        )
+        # Если summary пустое, отправка сообщения об отсутствии данных.
+        if summary is None:
+            await callback.message.edit_text(
+                main_texts.EMPTY_SUMMARY,
+                reply_markup=keyboards.WorkWithBase.main_menu()
+            )
 
-    # Вывод отчета о summary.
-    else:
+        # Вывод отчета о summary.
+        else:
+            await callback.message.edit_text(
+                get_summary_text(summary),
+                reply_markup=keyboards.FamilyFinanceKb.go_to_main()
+            )
+
+    # Отправка сообщения об ошибке.
+    except BackendError as e:
         await callback.message.edit_text(
-            get_summary_text(summary),
+            str(e),
             reply_markup=keyboards.FamilyFinanceKb.go_to_main()
         )
 

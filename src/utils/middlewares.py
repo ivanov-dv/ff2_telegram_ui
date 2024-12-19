@@ -7,6 +7,7 @@ from typing import Callable, Dict, Any, Awaitable
 import messages.texts
 from engine import backend_client
 from utils import keyboards
+from utils.exceptions import BackendError
 
 
 class AuthMessageMiddleware(BaseMiddleware):
@@ -22,14 +23,22 @@ class AuthMessageMiddleware(BaseMiddleware):
         data: Dict[str, Any]
     ) -> Any:
         # Получение пользователя.
-        user = await backend_client.get_user(event.from_user.id)
+        try:
+            user = await backend_client.get_user(event.from_user.id)
+
+        # Обработка BackendError.
+        except BackendError as e:
+            return await event.answer(
+                str(e),
+                reply_markup=keyboards.FamilyFinanceKb.go_to_main()
+            )
 
         # Если пользователь не зарегистрирован,
         # отправляется предложение регистрации.
         if not user:
             return await event.answer(
                 messages.texts.START_TEXT_FOR_NEW_USER,
-                reply_markup=keyboards.RegistrationKb().add_registration()
+                reply_markup=keyboards.RegistrationKb.add_registration()
             )
 
         # Если space не установлено, сообщение о необходимости выбрать space.
@@ -71,7 +80,15 @@ class AuthCallbackMiddleware(BaseMiddleware):
             return await handler(event, data)
 
         # Получение пользователя.
-        user = await backend_client.get_user(event.from_user.id)
+        try:
+            user = await backend_client.get_user(event.from_user.id)
+
+        # Обработка BackendError.
+        except BackendError as e:
+            return await event.message.edit_text(
+                str(e),
+                reply_markup=keyboards.FamilyFinanceKb.go_to_main()
+            )
 
         # Если пользователь не зарегистрирован,
         # отправляется предложение регистрации.

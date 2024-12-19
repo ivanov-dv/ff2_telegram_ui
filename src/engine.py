@@ -5,7 +5,6 @@ from aiogram.client.default import DefaultBotProperties
 
 from config import (
     BACKEND_URL,
-    BACKEND_TOKEN,
     AUTH_HEADERS,
     TELEGRAM_BOT_TOKEN,
     TELEGRAM_BOT_PARSE_MODE
@@ -17,4 +16,4 @@ bot = Bot(
     token=TELEGRAM_BOT_TOKEN,
     default=DefaultBotProperties(parse_mode=TELEGRAM_BOT_PARSE_MODE)
 )
-backend_client = BackendClient(BACKEND_URL, BACKEND_TOKEN, AUTH_HEADERS)
+backend_client = BackendClient(BACKEND_URL, AUTH_HEADERS)
