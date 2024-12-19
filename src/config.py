@@ -58,8 +58,8 @@ file_handler.setLevel(logging.DEBUG)
 
 logging.basicConfig(
     level=logging.DEBUG,
-    format='%(asctime)s | %(module)s | %(funcName)s '
-           '| %(levelname)s | %(message)s',
+    format='%(asctime)s | %(levelname)s | %(module)s | %(funcName)s '
+           '| %(message)s',
     datefmt='%Y-%m-%d | %H:%M:%S',
     handlers=[
         stream_handler,
