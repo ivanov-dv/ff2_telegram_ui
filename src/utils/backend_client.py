@@ -490,6 +490,6 @@ class BackendClient:
                         f'{response.status=}\n{await response.json()}'
                     )
                     raise BackendError(errors.UNLINK_USER_ERROR)
-            except Exception as e:
+            except Exception:
                 logger.exception(f'{url=}\n{data=}')
                 raise BackendError(errors.BAСKEND_ERROR)
