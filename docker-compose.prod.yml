@@ -6,4 +6,6 @@ services:
     build:
       context: .
     command: bash -c "cd src && poetry run python3 main.py"
+    volumes:
+      - ff2_telegram_ui_logs:/app/src/logs
     restart: always

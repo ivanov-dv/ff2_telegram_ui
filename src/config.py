@@ -54,7 +54,7 @@ file_handler = RotatingFileHandler(
     backupCount=ROTATING_FILE_COUNT,
     encoding=LOG_FILE_ENCODING,
 )
-file_handler.setLevel(logging.WARNING)
+file_handler.setLevel(logging.DEBUG)
 
 logging.basicConfig(
     level=logging.DEBUG,
