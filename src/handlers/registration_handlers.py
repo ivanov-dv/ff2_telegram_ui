@@ -1,3 +1,5 @@
+"""Хэндлеры для регистрации."""
+
 from aiogram import Router, F, types
 
 from messages import setting_texts

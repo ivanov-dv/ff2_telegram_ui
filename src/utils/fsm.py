@@ -1,3 +1,5 @@
+"""FSM состояния приложения."""
+
 from aiogram.fsm.state import State, StatesGroup
 
 

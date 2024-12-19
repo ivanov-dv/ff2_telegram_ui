@@ -1,3 +1,5 @@
+"""Хэндлеры для получения ID пользователя или чата."""
+
 from aiogram import Router, types
 from aiogram.filters import Command
 

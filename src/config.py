@@ -1,3 +1,5 @@
+"""Модуль, содержащий настройки приложения."""
+
 import logging
 import os
 import sys

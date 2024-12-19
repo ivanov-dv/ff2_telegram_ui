@@ -1,3 +1,5 @@
+"""Создание клавиатур."""
+
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
@@ -5,13 +7,10 @@ from utils.keyboard_generators import GeneratorKb
 from utils.models import Summary, Space, UserShort
 
 
-class BaseKb:
-    """Базовый класс, который определяет кол-во кнопок в строке"""
-    default_adjust = 2
+class FamilyFinanceKb:
+    """Базовый класс Inline клавиатуры приложения."""
 
-
-class FamilyFinanceKb(BaseKb):
-    """Класс Inline клавиатуры приложения"""
+    default_adjust = 2  # Количество кнопок в строке по умолчанию.
 
     button_back_to_start = InlineKeyboardButton(
         text='На главную', callback_data='start')
@@ -20,7 +19,7 @@ class FamilyFinanceKb(BaseKb):
 
     @classmethod
     def go_to_main(cls):
-        """Стартовая клавиатура."""
+        """Клавиатура для перехода на главную."""
         builder = InlineKeyboardBuilder()
         builder.row(cls.button_back_to_start)
         return builder.as_markup()
@@ -49,25 +48,29 @@ class WorkWithBase(FamilyFinanceKb):
     buttons_main_menu = [
         [button_edit, button_look],
         [button_create_group, button_delete_group],
-        [FamilyFinanceKb.button_choose_period, button_settings],
+        [super().button_choose_period, button_settings],
         [button_general_description]
     ]
     buttons_choose_type = [
         [button_income, button_expense],
-        [FamilyFinanceKb.button_back_to_start]]
+        [super().button_back_to_start]
+    ]
 
     @classmethod
-    def main(cls):
+    def main_menu(cls):
+        """Клавиатура главного меню."""
         builder = InlineKeyboardBuilder(markup=cls.buttons_main_menu)
         return builder.as_markup()
 
     @classmethod
     def choose_type(cls):
+        """Клавиатура выбора типа операции."""
         builder = InlineKeyboardBuilder(markup=cls.buttons_choose_type)
         return builder.as_markup()
 
     @classmethod
     def choose_group_name(cls, summary: Summary):
+        """Клавиатура выбора статьи."""
         builder = GeneratorKb.generate_choose_group_name(summary)
         builder.row(cls.button_back_to_start)
         builder.adjust(1)
@@ -91,12 +94,14 @@ class RegistrationKb(FamilyFinanceKb):
 
     @classmethod
     def add_registration(cls):
+        """Клавиатура для регистрации."""
         builder = InlineKeyboardBuilder()
         builder.row(cls.button_registration)
         return builder.as_markup()
 
     @classmethod
     def confirm_delete_registration(cls):
+        """Клавиатура подтверждения/отмены удаления аккаунта."""
         builder = InlineKeyboardBuilder(
             markup=cls.buttons_confirm_delete_registration
         ).adjust(cls.default_adjust)
@@ -141,28 +146,33 @@ class SettingsKb(FamilyFinanceKb):
 
     @classmethod
     def back_to_settings(cls):
+        """Клавиатура возврата в настройки приложения."""
         builder = InlineKeyboardBuilder(markup=cls.buttons_back_to_settings)
         return builder.as_markup()
 
     @classmethod
     def settings(cls):
+        """Клавиатура меню настроек приложения."""
         builder = InlineKeyboardBuilder(markup=cls.buttons_settings)
         return builder.as_markup()
 
     @classmethod
     def choose_period(cls):
+        """Клавиатура выбора периода."""
         builder = InlineKeyboardBuilder()
         builder.row(cls.button_choose_period)
         return builder.as_markup()
 
     @classmethod
     def generate_choose_period(cls):
+        """Клавиатура генерирующая кнопки периодов для выбора."""
         builder = GeneratorKb.generate_for_choose_period()
         builder.row(cls.button_back_to_start)
         return builder.as_markup()
 
     @classmethod
     def manage_linked_accounts(cls):
+        """Клавиатура меню для управления привязанными аккаунтами."""
         builder = InlineKeyboardBuilder(
             markup=cls.buttons_manage_linked_accounts
         )
@@ -173,6 +183,10 @@ class SettingsKb(FamilyFinanceKb):
             cls,
             linked_users: list[UserShort] | tuple[UserShort]
     ):
+        """
+        Клавиатура генерирует кнопки для выбора пользователя
+        и его отвязки от выбранного пространства.
+        """
         builder = GeneratorKb.generate_users_for_unlink(linked_users)
         builder.row(cls.button_back_to_settings)
         builder.adjust(1)
@@ -184,6 +198,10 @@ class SettingsKb(FamilyFinanceKb):
             owner_id,
             spaces: tuple[Space] | list[Space]
     ):
+        """
+        Клавиатура генерирует кнопки для выбора
+        доступного пользователю пространства.
+        """
         builder = GeneratorKb.generate_choose_space(owner_id, spaces)
         builder.add(cls.button_back_to_settings)
         builder.adjust(1)
@@ -191,6 +209,7 @@ class SettingsKb(FamilyFinanceKb):
 
     @classmethod
     def joint_chat_add(cls):
+        """Клавиатура подключения пользователя к текущему пространству."""
         builder = InlineKeyboardBuilder()
         builder.row(cls.button_joint_chat_instruction)
         builder.row(cls.button_back_to_settings)
@@ -199,6 +218,7 @@ class SettingsKb(FamilyFinanceKb):
 
     @classmethod
     def joint_chat_delete(cls):
+        """Клавиатура отключения пользователя от текущего пространства."""
         builder = InlineKeyboardBuilder()
         builder.row(cls.button_joint_chat_delete)
         builder.row(cls.button_back_to_settings)

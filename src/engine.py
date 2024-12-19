@@ -1,3 +1,5 @@
+"""Инициализированные экземпляры классов для работы приложения."""
+
 from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
 
