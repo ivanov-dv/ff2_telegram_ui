@@ -9,3 +9,6 @@ services:
     volumes:
       - ff2_telegram_ui_logs:/app/src/logs
     restart: always
+
+volumes:
+  ff2_telegram_ui_logs:
