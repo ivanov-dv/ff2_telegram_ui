@@ -9,6 +9,7 @@ from engine import backend_client, bot
 from messages import setting_texts
 from messages.texts import JOINT_CHAT_INSTRUCTION, LINKED_ACCOUNTS_INSTRUCTION
 from utils import keyboards as kb, keyboards
+from utils.exceptions import BackendError
 from utils.fsm import LinkedAccounts, JointChat
 
 logger = logging.getLogger(__name__)
@@ -105,24 +106,24 @@ async def add_linked_account(message: types.Message, state: FSMContext):
         # Получение пользователя из состояния.
         user = data['user']
 
-        # Запрос на предоставление доступа пользователю.
-        is_linked_user = await backend_client.link_user_to_space(
-            message.from_user.id,
-            user.core_settings.current_space.id,
-            link_user.id
-        )
+        try:
+            # Запрос на предоставление доступа пользователю.
+            is_linked_user = await backend_client.link_user_to_space(
+                message.from_user.id,
+                user.core_settings.current_space.id,
+                link_user.id
+            )
 
-        # Отправка сообщения об успешном/неуспешном выполнении зарпоса.
-        if is_linked_user:
+            # Отправка сообщения об успешном/неуспешном выполнении запроса.
             await message.answer(
                 setting_texts.SUCCESS_LINK_USER.format(
                     id_telegram=telegram_id_link_user
                 ),
                 reply_markup=kb.SettingsKb.back_to_settings()
             )
-        else:
+        except BackendError as e:
             await message.answer(
-                setting_texts.FAIL_LINK_USER,
+                str(e),
                 reply_markup=kb.SettingsKb.back_to_settings()
             )
 
@@ -168,27 +169,29 @@ async def delete_linked_account(
     data = await state.get_data()
     user = data['user']
 
-    # Отправка запроса на отключение пользователя.
-    is_unlinked_user = await backend_client.unlink_user_to_space(
-        callback.from_user.id,
-        user.core_settings.current_space.id,
-        int(callback.data)
-    )
-
-    # Отправка сообщения об успешном/неуспешном выполнении зарпоса.
-    if is_unlinked_user:
+    try:
+        # Отправка запроса на отключение пользователя.
+        is_unlinked_user = await backend_client.unlink_user_to_space(
+            callback.from_user.id,
+            user.core_settings.current_space.id,
+            int(callback.data)
+        )
+        # Отправка сообщения об успешном/неуспешном выполнении зарпоса.
         await callback.message.edit_text(
             setting_texts.SUCCESS_UNLINK_USER,
             reply_markup=keyboards.SettingsKb.settings()
         )
-    else:
+
+    # Отправка сообщения в случае ошибки.
+    except BackendError as e:
         await callback.message.edit_text(
-            setting_texts.FAIL_UNLINK_USER,
+            str(e),
             reply_markup=keyboards.SettingsKb.settings()
         )
 
     # Очистка состояния.
-    await state.clear()
+    finally:
+        await state.clear()
 
 
 @router.callback_query(F.data == 'choose_space')
@@ -256,11 +259,10 @@ async def accept_choose_base(callback: types.CallbackQuery, state: FSMContext):
                 # Выход из цикла.
                 break
 
-    # Если непредвиденная ошибка, логируем и сообщаем об этом пользователю.
-    except Exception as e:
-        logger.exception(f'{e} {new_space_id=}')
+    # Отправка сообщения в случае ошибки BackendError.
+    except BackendError as e:
         await callback.message.edit_text(
-            setting_texts.FAIL_UPDATE_SPACE,
+            str(e),
             reply_markup=keyboards.SettingsKb.back_to_settings()
         )
 
@@ -318,15 +320,15 @@ async def joint_chat_add(message: types.Message, state: FSMContext):
     # Удаление пробелов из введенного пользователем текста.
     cleaned_message = message.text.strip()
 
-    # Отправляем запрос на изменение настроек.
-    space = await backend_client.update_space(
-        message.from_user.id,
-        user.core_settings.current_space.id,
-        {'linked_chat': cleaned_message}
-    )
+    try:
+        # Отправляем запрос на изменение настроек.
+        await backend_client.update_space(
+            message.from_user.id,
+            user.core_settings.current_space.id,
+            {'linked_chat': cleaned_message}
+        )
 
-    # Если изменения успешно внесены, уведомляем пользователя.
-    if space:
+        # Если изменения успешно внесены, уведомляем пользователя.
         await message.answer(
             setting_texts.SUCCESS_LINK_CHAT.format(
                 linked_chat=cleaned_message,
@@ -338,18 +340,19 @@ async def joint_chat_add(message: types.Message, state: FSMContext):
         )
 
     # Если изменения не внесены, уведомляем пользователя.
-    else:
+    except BackendError as e:
         await message.answer(
-            setting_texts.FAIL_LINK_CHAT,
+            str(e),
             reply_markup=keyboards.SettingsKb.back_to_settings()
         )
 
-    # Удаление предыдущих сообщений пользователя и бота.
-    await bot.delete_message(message.from_user.id, data["msg_id"])
-    await message.delete()
+    finally:
+        # Удаление предыдущих сообщений пользователя и бота.
+        await bot.delete_message(message.from_user.id, data["msg_id"])
+        await message.delete()
 
-    # Очистка состояния.
-    await state.clear()
+        # Очистка состояния.
+        await state.clear()
 
 
 @router.callback_query(F.data == 'joint_chat_delete')
@@ -359,15 +362,15 @@ async def joint_chat_delete(callback: types.CallbackQuery):
     # Получение пользователя.
     user = await backend_client.get_user(callback.from_user.id)
 
-    # Отправка запроса на отключение чата.
-    space = await backend_client.update_space(
-        callback.from_user.id,
-        user.core_settings.current_space.id,
-        {'linked_chat': ''}
-    )
+    try:
+        # Отправка запроса на отключение чата.
+        await backend_client.update_space(
+            callback.from_user.id,
+            user.core_settings.current_space.id,
+            {'linked_chat': ''}
+        )
 
-    # Если изменения успешно внесены, уведомляем пользователя.
-    if space:
+        # Если изменения успешно внесены, уведомляем пользователя.
         await callback.message.edit_text(
             setting_texts.SUCCESS_DISABLE_LINK_CHAT.format(
                 current_space=user.core_settings.current_space.name,
@@ -378,9 +381,9 @@ async def joint_chat_delete(callback: types.CallbackQuery):
         )
 
     # Если изменения не внесены, уведомляем пользователя.
-    else:
+    except BackendError as e:
         await callback.message.edit_text(
-            setting_texts.FAIL_DISABLE_LINK_CHAT,
+            str(e),
             reply_markup=keyboards.SettingsKb.back_to_settings()
         )
 

@@ -84,7 +84,7 @@ class BackendClient:
                 logger.exception(f'{url=}')
                 raise BackendError(errors.BAСKEND_ERROR)
 
-    async def get_user(self, id_telegram: int | str) -> User:
+    async def get_user(self, id_telegram: int | str) -> User | None:
         """
         Получение пользователя по Telegram ID.
 
@@ -96,11 +96,12 @@ class BackendClient:
             try:
                 response = await session.get(url)
                 response_json = await response.json()
-                if ('results' not in response_json or
-                        not response_json['results']):
+                if 'results' not in response_json:
                     logger.error(f'{errors.BACKEND_RESPONSE_NOT_EXPECTED}\n'
                                  f'{id_telegram=}\n{response_json=}')
                     raise BackendError(errors.BAСKEND_ERROR)
+                if not response_json['results']:
+                    return None
                 return User(**response_json['results'][0])
             except Exception:
                 logger.exception(f'{errors.BAСKEND_ERROR}\n{url=}')
@@ -285,7 +286,7 @@ class BackendClient:
                 logger.exception(f'{url=}')
                 raise BackendError(errors.BAСKEND_ERROR)
 
-    async def get_summary(self, id_telegram: int | str):
+    async def get_summary(self, id_telegram: int | str) -> Summary | None:
         """
         Получение отчета пользователя за период,
         установленный в базовых настройках.
