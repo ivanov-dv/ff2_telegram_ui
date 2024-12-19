@@ -108,7 +108,7 @@ async def add_linked_account(message: types.Message, state: FSMContext):
 
         try:
             # Запрос на предоставление доступа пользователю.
-            is_linked_user = await backend_client.link_user_to_space(
+            await backend_client.link_user_to_space(
                 message.from_user.id,
                 user.core_settings.current_space.id,
                 link_user.id
@@ -171,7 +171,7 @@ async def delete_linked_account(
 
     try:
         # Отправка запроса на отключение пользователя.
-        is_unlinked_user = await backend_client.unlink_user_to_space(
+        await backend_client.unlink_user_to_space(
             callback.from_user.id,
             user.core_settings.current_space.id,
             int(callback.data)

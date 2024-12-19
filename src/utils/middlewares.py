@@ -33,7 +33,6 @@ class AuthMessageMiddleware(BaseMiddleware):
                 reply_markup=keyboards.FamilyFinanceKb.go_to_main()
             )
 
-
         # Если пользователь не зарегистрирован,
         # отправляется предложение регистрации.
         if not user:

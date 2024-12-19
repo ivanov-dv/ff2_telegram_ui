@@ -7,7 +7,6 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
 import messages.main_texts as main_texts
-import messages.errors as errors_texts
 from engine import backend_client
 from messages.main_texts import get_summary_text
 from messages.texts import GENERAL_DESCRIPTION

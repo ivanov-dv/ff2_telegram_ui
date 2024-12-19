@@ -61,7 +61,6 @@ async def create_group_get_name(message: types.Message, state: FSMContext):
                 reply_markup=keyboards.FamilyFinanceKb.go_to_main()
             )
 
-
         # Если ошибка не обнаружена, проверка на уникальность названия статьи.
         elif await backend_client.group_name_is_exist(
                 message.from_user.id,
@@ -72,7 +71,8 @@ async def create_group_get_name(message: types.Message, state: FSMContext):
                 reply_markup=keyboards.FamilyFinanceKb.go_to_main()
             )
 
-        # Если название статьи уникальное, отправка сообщения о создании статьи.
+        # Если название статьи уникальное,
+        # отправка сообщения о создании статьи.
         else:
             # Установка состояния для получения планового значения статьи.
             await state.set_state(CreateGroupState.get_plan_value)
@@ -162,8 +162,9 @@ async def create_group_get_plan_value(
                         format(
                             first_name=message.from_user.first_name,
                             telegram_id=message.from_user.id,
-                            current_space=user.
-                                core_settings.current_space.name,
+                            current_space=(
+                                user.core_settings.current_space.name
+                            ),
                             current_month=user.core_settings.current_month,
                             current_year=user.core_settings.current_year,
                             type_value=type_value,

@@ -4,7 +4,6 @@ from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 
 from engine import backend_client
-from messages import choose_period_texts
 from utils.exceptions import BackendError
 from utils.keyboards import FamilyFinanceKb
 from handlers.main_handlers import start_callback
@@ -22,7 +21,6 @@ async def choose_period(callback: types.CallbackQuery, state: FSMContext):
 
     # Распаковка нового периода
     *_, new_month_period, new_year_period = callback.data.split('_')
-
 
     try:
         # Обновление настроек пользователя в БД.
@@ -44,5 +42,3 @@ async def choose_period(callback: types.CallbackQuery, state: FSMContext):
             reply_markup=FamilyFinanceKb.go_to_main()
         )
         return
-
-
