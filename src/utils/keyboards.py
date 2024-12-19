@@ -48,12 +48,12 @@ class WorkWithBase(FamilyFinanceKb):
     buttons_main_menu = [
         [button_edit, button_look],
         [button_create_group, button_delete_group],
-        [super().button_choose_period, button_settings],
+        [FamilyFinanceKb.button_choose_period, button_settings],
         [button_general_description]
     ]
     buttons_choose_type = [
         [button_income, button_expense],
-        [super().button_back_to_start]
+        [FamilyFinanceKb.button_back_to_start]
     ]
 
     @classmethod
