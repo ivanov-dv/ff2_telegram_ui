@@ -219,7 +219,7 @@ async def look_summary(callback: types.CallbackQuery, state: FSMContext):
         else:
             await callback.message.edit_text(
                 get_summary_text(summary),
-                reply_markup=keyboards.FamilyFinanceKb.go_to_main()
+                reply_markup=keyboards.WorkWithBase.look_base()
             )
 
     # Отправка сообщения об ошибке.
