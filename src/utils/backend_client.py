@@ -180,7 +180,7 @@ class BackendClient:
         """
         async with (aiohttp.ClientSession(headers=self.headers) as session):
             user_id = await self.get_user_id(id_telegram)
-            url = (f'{self.backend_url}users/{user_id}'
+            url = (f'{self.backend_url}users/{user_id}/'
                    f'summary/?group_name={group_name}')
             try:
                 response = await session.get(url)

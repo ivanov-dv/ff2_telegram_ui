@@ -454,14 +454,16 @@ async def add_transaction_get_description(
         user = await backend_client.get_user(message.from_user.id)
 
         # Отправка сообщения об успешном добавлении транзакции.
+        old_value = round(old_group.fact_value / 1000, 2)
+        new_value = old_value + round(transaction.value_transaction / 1000, 2)
         await message.answer(
             transaction_texts.SUCCESS_ADD_TRANSACTION.format(
                 current_month=user.core_settings.current_month,
                 current_year=user.core_settings.current_year,
                 type_transaction=type_transaction,
                 group_name=data['group_name'],
-                old_value=round(old_group.fact_value / 1000, 2),
-                new_value=round(transaction.value_transaction / 1000, 2),
+                old_value=old_value,
+                new_value=new_value,
                 description=transaction.description
             ),
             reply_markup=keyboards.WorkWithBase.main_menu()
