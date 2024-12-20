@@ -1,10 +1,12 @@
 """Взаимодействие с бэкендом."""
 
 from decimal import Decimal
+from io import BytesIO
 
 import aiohttp
 import logging
 
+from aiogram.types import BufferedInputFile
 from async_lru import alru_cache
 from pydantic import ValidationError
 
@@ -493,4 +495,32 @@ class BackendClient:
                     raise BackendError(errors.UNLINK_USER_ERROR)
             except Exception:
                 logger.exception(f'{url=}\n{data=}')
+                raise BackendError(errors.BAСKEND_ERROR)
+
+    async def get_export_excel(self, id_telegram):
+        """
+        Запрос excel файла с детализацией.
+
+        :param id_telegram: Telegram ID пользователя.
+        :return: bytes
+        """
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            user_id = await self.get_user_id(id_telegram)
+            url = f'{self.backend_url}users/{user_id}/export/excel/'
+            try:
+                response = await session.get(url)
+                if response.status == 200:
+                    file_buffer = BytesIO(await response.read())
+                    file_buffer.seek(0)
+                    return BufferedInputFile(
+                        file_buffer.getvalue(),
+                        'transactions.xlsx'
+                    )
+                else:
+                    logger.error(
+                        f'{errors.BAСKEND_ERROR}\n{response.status=}\n{url=}'
+                    )
+                    raise BackendError(errors.BAСKEND_ERROR)
+            except Exception:
+                logger.exception(f'{url=}')
                 raise BackendError(errors.BAСKEND_ERROR)

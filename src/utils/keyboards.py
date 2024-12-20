@@ -30,6 +30,8 @@ class WorkWithBase(FamilyFinanceKb):
 
     button_look = InlineKeyboardButton(
         text='Просмотр', callback_data='look_base')
+    button_export_excel = InlineKeyboardButton(
+        text='Детализация в Excel', callback_data='export_excel')
     button_settings = InlineKeyboardButton(
         text='Настройки', callback_data='settings')
     button_edit = InlineKeyboardButton(
@@ -55,6 +57,10 @@ class WorkWithBase(FamilyFinanceKb):
         [button_income, button_expense],
         [FamilyFinanceKb.button_back_to_start]
     ]
+    buttons_look_base = [
+        [button_export_excel],
+        [FamilyFinanceKb.button_back_to_start]
+    ]
 
     @classmethod
     def main_menu(cls):
@@ -74,6 +80,12 @@ class WorkWithBase(FamilyFinanceKb):
         builder = GeneratorKb.generate_choose_group_name(summary)
         builder.row(cls.button_back_to_start)
         builder.adjust(1)
+        return builder.as_markup()
+
+    @classmethod
+    def look_base(cls):
+        """Клавиатура просмотра отчета."""
+        builder = InlineKeyboardBuilder(markup=cls.buttons_look_base)
         return builder.as_markup()
 
 
