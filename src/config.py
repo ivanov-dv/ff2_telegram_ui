@@ -15,6 +15,9 @@ BACKEND_URL = os.getenv('BACKEND_URL')
 BACKEND_TOKEN = os.getenv('BACKEND_TOKEN')
 AUTH_HEADERS = {'Authorization': BACKEND_TOKEN}
 
+# Настройки glitchtip
+GLITCHTIP_DSN = os.getenv('GLITCHTIP_DSN')
+
 # Настройки кеширования
 BACKEND_GET_USER_ID_TTL = 10
 
