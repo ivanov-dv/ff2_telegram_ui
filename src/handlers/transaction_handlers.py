@@ -3,6 +3,7 @@
 from decimal import Decimal
 
 from aiogram import F, Router, types
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 
 from engine import backend_client, bot
@@ -100,7 +101,10 @@ async def create_group_get_name(message: types.Message, state: FSMContext):
         await message.delete()
 
         # Удаление предыдущего сообщения бота.
-        await bot.delete_message(message.from_user.id, data['msg_id'])
+        try:
+            await bot.delete_message(message.from_user.id, data['msg_id'])
+        except TelegramBadRequest:
+            await message.edit_text('-')
 
         # Сохранение в состоянии номера сообщения.
         await state.update_data(msg_id=msg.message_id)
@@ -188,7 +192,10 @@ async def create_group_get_plan_value(
         await message.delete()
 
         # Удаление предыдущего сообщения бота.
-        await bot.delete_message(message.from_user.id, data['msg_id'])
+        try:
+            await bot.delete_message(message.from_user.id, data['msg_id'])
+        except TelegramBadRequest:
+            await message.edit_text('-')
 
 
 @router.callback_query(DeleteGroupState.get_type)
@@ -415,7 +422,10 @@ async def add_transaction_get_value(message: types.Message, state: FSMContext):
         await message.delete()
 
         # Удаление предыдущего сообщения бота.
-        await bot.delete_message(message.from_user.id, data['msg_id'])
+        try:
+            await bot.delete_message(message.from_user.id, data['msg_id'])
+        except TelegramBadRequest:
+            await message.edit_text('-')
 
         # Запись ID нового сообщения в состояние.
         await state.update_data(msg_id=msg.message_id)
@@ -500,7 +510,10 @@ async def add_transaction_get_description(
         await message.delete()
 
         # Удаление предыдущего сообщения бота.
-        await bot.delete_message(message.from_user.id, data['msg_id'])
+        try:
+            await bot.delete_message(message.from_user.id, data['msg_id'])
+        except TelegramBadRequest:
+            await message.edit_text('-')
 
         # Очистка состояния.
         await state.clear()
