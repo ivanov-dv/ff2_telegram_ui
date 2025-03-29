@@ -284,6 +284,7 @@ class BackendClient:
                         f'{response.status=}\n{await response.json()}'
                     )
                     raise BackendError(errors.DELETE_GROUP_ERROR)
+                return True
             except Exception:
                 logger.exception(f'{url=}')
                 raise BackendError(errors.BAСKEND_ERROR)
