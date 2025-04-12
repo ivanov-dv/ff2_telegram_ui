@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ff2-telegram-ui
+  labels:
+    app: ff2-telegram-ui
+spec:
+  selector:
+    matchLabels:
+      app: ff2-telegram-ui
+  template:
+    metadata:
+      labels:
+        app: ff2-telegram-ui
+    spec:
+      containers:
+        - name: ff2-telegram-ui
+          image: ivanovdv/ff2-telegram-ui:latest
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: ff2-telegram-ui-env
