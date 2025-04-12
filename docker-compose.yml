@@ -5,6 +5,5 @@ services:
       - .env
     build:
       context: .
-    command: bash -c "cd src && poetry run python3 main.py"
     volumes:
       - ./src:/app/src

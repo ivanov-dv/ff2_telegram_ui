@@ -23,3 +23,5 @@ COPY poetry.lock pyproject.toml ./
 RUN poetry install $( [ "$TYPE_ENV" = "production" ] && echo "--only=main" ) --no-interaction --no-ansi
 
 COPY src /app/src
+
+RUN poetry run python3 src/main.py
