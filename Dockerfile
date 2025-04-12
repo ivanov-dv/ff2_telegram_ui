@@ -24,4 +24,4 @@ RUN poetry install $( [ "$TYPE_ENV" = "production" ] && echo "--only=main" ) --n
 
 COPY src /app/src
 
-RUN poetry run python3 src/main.py
+CMD poetry run python3 src/main.py
