@@ -143,6 +143,9 @@ class SettingsKb(FamilyFinanceKb):
         text='Отключить', callback_data='joint_chat_delete')
     button_joint_chat_instruction = InlineKeyboardButton(
         text='Инструкция', callback_data='joint_chat_instruction')
+    button_archive = InlineKeyboardButton(
+        text='Архив', callback_data='period_archive'
+    )
 
     buttons_back_to_settings = [
         [button_back_to_settings]]
@@ -179,6 +182,7 @@ class SettingsKb(FamilyFinanceKb):
     def generate_choose_period(cls):
         """Клавиатура генерирующая кнопки периодов для выбора."""
         builder = GeneratorKb.generate_for_choose_period()
+        builder.row(cls.button_archive)
         builder.row(cls.button_back_to_start)
         return builder.as_markup()
 

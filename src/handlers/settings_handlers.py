@@ -395,3 +395,12 @@ async def joint_chat_instruction(callback: types.CallbackQuery):
         JOINT_CHAT_INSTRUCTION,
         reply_markup=kb.SettingsKb().back_to_settings()
     )
+
+
+@router.callback_query(F.data == 'period_archive')
+async def show_period_archive(callback: types.CallbackQuery):
+    """Выбор архивного периода."""
+    await callback.message.edit_text(
+        "Раздел в процессе разработки.",
+        reply_markup=kb.FamilyFinanceKb.go_to_main()
+    )
