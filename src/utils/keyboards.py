@@ -144,7 +144,7 @@ class SettingsKb(FamilyFinanceKb):
     button_joint_chat_instruction = InlineKeyboardButton(
         text='Инструкция', callback_data='joint_chat_instruction')
     button_archive = InlineKeyboardButton(
-        text='Архив', callback_data='period_archive'
+        text='Архив', callback_data='archive_periods'
     )
 
     buttons_back_to_settings = [

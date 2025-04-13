@@ -397,8 +397,8 @@ async def joint_chat_instruction(callback: types.CallbackQuery):
     )
 
 
-@router.callback_query(F.data == 'period_archive')
-async def show_period_archive(callback: types.CallbackQuery):
+@router.callback_query(F.data == 'archive_periods')
+async def archive_periods(callback: types.CallbackQuery):
     """Выбор архивного периода."""
     await callback.message.edit_text(
         "Раздел в процессе разработки.",
