@@ -1,6 +1,4 @@
-import pytest
-
-from src.utils.keyboard_generators import GeneratorKb
+from utils.keyboard_generators import GeneratorKb
 
 
 def test_structure_generate_for_choose_period():
@@ -8,8 +6,8 @@ def test_structure_generate_for_choose_period():
     keyboard = builder.as_markup().inline_keyboard
     assert len(keyboard) == 3
     assert len(keyboard[0]) == 2
-    assert len(keyboard[1]) == 2
-    assert len(keyboard[2]) == 1
+    assert len(keyboard[1]) == 1
+    assert len(keyboard[2]) == 2
     assert keyboard[0][0].callback_data.startswith('period_')
 
 
