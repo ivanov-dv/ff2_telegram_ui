@@ -6,11 +6,12 @@ from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 
 from engine import backend_client, bot
+from handlers.main_handlers import start_callback
 from messages import setting_texts
 from messages.texts import JOINT_CHAT_INSTRUCTION, LINKED_ACCOUNTS_INSTRUCTION
 from utils import keyboards as kb, keyboards
 from utils.exceptions import BackendError
-from utils.fsm import LinkedAccounts, JointChat
+from utils.fsm import LinkedAccounts, JointChat, ChooseArchive
 
 logger = logging.getLogger(__name__)
 router = Router()
@@ -176,7 +177,7 @@ async def delete_linked_account(
             user.core_settings.current_space.id,
             int(callback.data)
         )
-        # Отправка сообщения об успешном/неуспешном выполнении зарпоса.
+        # Отправка сообщения об успешном/неуспешном выполнении запроса.
         await callback.message.edit_text(
             setting_texts.SUCCESS_UNLINK_USER,
             reply_markup=keyboards.SettingsKb.settings()
@@ -397,10 +398,85 @@ async def joint_chat_instruction(callback: types.CallbackQuery):
     )
 
 
-@router.callback_query(F.data == 'archive_periods')
-async def archive_periods(callback: types.CallbackQuery):
-    """Выбор архивного периода."""
-    await callback.message.edit_text(
-        "Раздел в процессе разработки.",
-        reply_markup=kb.FamilyFinanceKb.go_to_main()
-    )
+@router.callback_query(F.data == 'all_periods')
+async def all_periods_get_year(callback: types.CallbackQuery, state: FSMContext):
+    """Выбор года."""
+    # Очистка состояния.
+    await state.clear()
+
+    try:
+        # Получение годов, в которых есть данные.
+        years = await backend_client.get_all_years(callback.from_user.id)
+
+        # Отправка сообщения с выбором года.
+        await callback.message.edit_text(
+            'Выберите год 👇\n',
+            reply_markup=kb.SettingsKb.generate_choose_all_years_in_space(sorted(years, reverse=True, key=int))
+        )
+        await state.set_state(ChooseArchive.get_year)
+
+    # Отправка сообщения в случае ошибки бэкенда.
+    except BackendError as e:
+        await callback.message.edit_text(
+            str(e),
+            reply_markup=keyboards.FamilyFinanceKb.go_to_main()
+        )
+
+
+@router.callback_query(F.data.startswith('all_periods_year_') and ChooseArchive.get_year)
+async def all_periods_get_month(callback: types.CallbackQuery, state: FSMContext):
+    """Выбор месяца."""
+
+    # Сохранение года в состоянии.
+    await state.update_data(year=int(callback.data.split('_')[3]))
+
+    try:
+        # Получение месяцев, в которых есть данные.
+        months = await backend_client.get_all_months_in_year(callback.from_user.id, int(callback.data.split('_')[3]))
+
+        # Отправка сообщения с выбором месяца.
+        await callback.message.edit_text(
+            'Выберите месяц 👇',
+            reply_markup=kb.SettingsKb.generate_choose_month_in_year(sorted(months, key=int))
+        )
+
+        # Установка состояния.
+        await state.set_state(ChooseArchive.get_month)
+
+    # Отправка сообщения в случае ошибки бэкенда.
+    except BackendError as e:
+        await callback.message.edit_text(
+            str(e),
+            reply_markup=keyboards.FamilyFinanceKb.go_to_main()
+        )
+
+
+@router.callback_query(F.data.startswith('all_periods_month_') and ChooseArchive.get_month)
+async def all_periods_set_new_period(callback: types.CallbackQuery, state: FSMContext):
+    """Установка нового периода."""
+
+    # Получение данных из состояния.
+    data = await state.get_data()
+
+    try:
+        # Установка нового периода.
+        await backend_client.update_core_settings(
+            id_telegram=callback.from_user.id,
+            data={
+                'current_year': data['year'],
+                'current_month': int(callback.data.split('_')[3])
+            }
+        )
+
+        # Очистка состояния.
+        await state.clear()
+
+        # Переход в главное меню.
+        await start_callback(callback, state)
+
+    # Отправка сообщения в случае ошибки бэкенда.
+    except BackendError as e:
+        await callback.message.edit_text(
+            str(e),
+            reply_markup=keyboards.FamilyFinanceKb.go_to_main()
+        )
