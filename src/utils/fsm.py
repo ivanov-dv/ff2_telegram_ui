@@ -36,3 +36,8 @@ class ChooseBase(StatesGroup):
 
 class JointChat(StatesGroup):
     get_id_joint_chat = State()
+
+
+class ChooseArchive(StatesGroup):
+    get_year = State()
+    get_month = State()

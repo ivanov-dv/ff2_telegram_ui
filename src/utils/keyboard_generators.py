@@ -174,3 +174,30 @@ class GeneratorKb:
                 callback_data=f'{user.id}'
             )
         return builder
+
+
+    @staticmethod
+    def generate_years(years: list[str]) -> KeyboardBuilder:
+        """
+        Генерация кнопок годов.
+        """
+        builder = InlineKeyboardBuilder()
+        for year in years:
+            builder.button(
+                text=f'{year}',
+                callback_data=f'all_periods_year_{year}'
+            )
+        return builder.adjust(2)
+
+    @classmethod
+    def generate_months(cls, months: list[str]) -> KeyboardBuilder:
+        """
+        Генерация кнопок месяцев.
+        """
+        builder = InlineKeyboardBuilder()
+        for month in months:
+            builder.button(
+                text=f'{month}',
+                callback_data=f'all_periods_month_{month}'
+            )
+        return builder.adjust(len(months) // 2)

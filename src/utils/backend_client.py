@@ -525,3 +525,53 @@ class BackendClient:
             except Exception:
                 logger.exception(f'{url=}')
                 raise BackendError(errors.BAСKEND_ERROR)
+
+    async def get_all_years(self, id_telegram) -> list[str]:
+        """
+        Запрос годов, в которых есть данные в текущем пространстве пользователя.
+
+        :param id_telegram: Telegram ID пользователя.
+        :return: Список годов.
+        """
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            user_id = await self.get_user_id(id_telegram)
+            url = f'{self.backend_url}users/{user_id}/periods/years/'
+            try:
+                response = await session.get(url)
+                if response.status == 200:
+                    result = await response.json()
+                    return result['years']
+                else:
+                    logger.error(
+                        f'{errors.BAСKEND_ERROR}\n{response.status=}\n{url=}'
+                    )
+                    raise BackendError(errors.BAСKEND_ERROR)
+            except Exception:
+                logger.exception(f'{url=}')
+                raise BackendError(errors.BAСKEND_ERROR)
+
+    async def get_all_months_in_year(self, id_telegram, year) -> list[str]:
+        """
+        Запрос месяцев, в которых есть данные в указанном году и текущем пространстве пользователя.
+
+        :param id_telegram: Telegram ID пользователя.
+        :param year: Год.
+        :return: Список месяцев.
+        """
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            user_id = await self.get_user_id(id_telegram)
+            url = f'{self.backend_url}users/{user_id}/periods/months/?year={year}'
+            try:
+                response = await session.get(url)
+                if response.status == 200:
+                    result = await response.json()
+                    return result['months']
+                else:
+                    logger.error(
+                        f'{errors.BAСKEND_ERROR}\n{response.status=}\n{url=}'
+                    )
+                    raise BackendError(errors.BAСKEND_ERROR)
+            except Exception:
+                logger.exception(f'{url=}')
+                raise BackendError(errors.BAСKEND_ERROR)
+
