@@ -574,4 +574,3 @@ class BackendClient:
             except Exception:
                 logger.exception(f'{url=}')
                 raise BackendError(errors.BAСKEND_ERROR)
-

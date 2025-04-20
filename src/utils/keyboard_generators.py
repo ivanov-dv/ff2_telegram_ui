@@ -169,7 +169,6 @@ class GeneratorKb:
             )
         return builder
 
-
     @staticmethod
     def generate_years(years: list[str]) -> KeyboardBuilder:
         """
