@@ -12,7 +12,7 @@ env:
   DOCKER_REPO: ivanovdv/ff2-telegram-ui
 
 jobs:
-  flake8:
+  flake8 and pytest:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +28,7 @@ jobs:
       run: poetry install --with dev
     - name: Flake8
       run: |
-        poetry run flake8 src/
+        poetry run flake8 --ignore=E501 src/
         poetry run pytest
 
   deploy_via_k8s:

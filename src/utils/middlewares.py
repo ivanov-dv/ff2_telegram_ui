@@ -50,8 +50,7 @@ class AuthMessageMiddleware(BaseMiddleware):
 
         # Если current_month или current_year не установлены,
         # сообщение о необходимости выбрать период.
-        if (user.core_settings.current_month is None or
-                user.core_settings.current_year is None):
+        if user.core_settings.current_month is None or user.core_settings.current_year is None:
             return await event.answer(
                 messages.texts.CHOOSE_PERIOD,
                 reply_markup=keyboards.SettingsKb.generate_choose_period()
@@ -110,8 +109,7 @@ class AuthCallbackMiddleware(BaseMiddleware):
 
         # Если current_month или current_year не установлены,
         # сообщение о необходимости выбрать период.
-        if (user.core_settings.current_month is None or
-                user.core_settings.current_year is None):
+        if user.core_settings.current_month is None or user.core_settings.current_year is None:
             return await event.message.edit_text(
                 messages.texts.CHOOSE_PERIOD,
                 reply_markup=keyboards.SettingsKb.generate_choose_period()
