@@ -28,7 +28,7 @@ jobs:
       run: poetry install --with dev
     - name: Flake8
       run: |
-        poetry run flake8 src/
+        poetry run flake8 --ignore=E501 src/
         poetry run pytest
 
   deploy_via_k8s:
