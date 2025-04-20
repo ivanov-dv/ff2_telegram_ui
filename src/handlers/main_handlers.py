@@ -89,32 +89,31 @@ async def start_callback(callback: types.CallbackQuery, state: FSMContext):
     try:
         user = await backend_client.get_user(callback.from_user.id)
 
+        # Если период не выбран, предлагает выбрать.
+        if not (user.core_settings.current_month and user.core_settings.current_year):
+            await callback.message.edit_text(
+                main_texts.CHOOSE_PERIOD,
+                reply_markup=keyboards.SettingsKb.generate_choose_period()
+            )
+
+        # Если период выбран, выводит начальное сообщение.
+        else:
+            await callback.message.edit_text(
+                main_texts.MAIN_TEXT.format(
+                    first_name=callback.from_user.first_name,
+                    user_id=callback.from_user.id,
+                    space_name=user.core_settings.current_space.name,
+                    current_month=user.core_settings.current_month,
+                    current_year=user.core_settings.current_year
+                ),
+                reply_markup=keyboards.WorkWithBase.main_menu()
+            )
+
     # Отправка ошибки.
     except BackendError as e:
         await callback.message.edit_text(
             str(e),
             reply_markup=keyboards.FamilyFinanceKb.go_to_main()
-        )
-
-    # Если период не выбран, предлагает выбрать.
-    if not (user.core_settings.current_month and
-            user.core_settings.current_year):
-        await callback.message.edit_text(
-            main_texts.CHOOSE_PERIOD,
-            reply_markup=keyboards.SettingsKb.generate_choose_period()
-        )
-
-    # Если период выбран, выводит начальное сообщение.
-    else:
-        await callback.message.edit_text(
-            main_texts.MAIN_TEXT.format(
-                first_name=callback.from_user.first_name,
-                user_id=callback.from_user.id,
-                space_name=user.core_settings.current_space.name,
-                current_month=user.core_settings.current_month,
-                current_year=user.core_settings.current_year
-            ),
-            reply_markup=keyboards.WorkWithBase.main_menu()
         )
 
 

@@ -144,7 +144,7 @@ class SettingsKb(FamilyFinanceKb):
     button_joint_chat_instruction = InlineKeyboardButton(
         text='Инструкция', callback_data='joint_chat_instruction')
     button_archive = InlineKeyboardButton(
-        text='Архив', callback_data='archive_periods'
+        text='Все периоды', callback_data='all_periods'
     )
 
     buttons_back_to_settings = [
@@ -239,4 +239,16 @@ class SettingsKb(FamilyFinanceKb):
         builder.row(cls.button_joint_chat_delete)
         builder.row(cls.button_back_to_settings)
         builder.adjust(1)
+        return builder.as_markup()
+
+    @classmethod
+    def generate_choose_all_years_in_space(cls, years: list[str]):
+        builder = GeneratorKb.generate_years(years)
+        builder.row(cls.button_back_to_start)
+        return builder.as_markup()
+
+    @classmethod
+    def generate_choose_month_in_year(cls, months: list[str]):
+        builder = GeneratorKb.generate_months(months)
+        builder.row(cls.button_back_to_start)
         return builder.as_markup()
