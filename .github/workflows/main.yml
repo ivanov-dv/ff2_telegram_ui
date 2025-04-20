@@ -12,7 +12,7 @@ env:
   DOCKER_REPO: ivanovdv/ff2-telegram-ui
 
 jobs:
-  flake8 and pytest:
+  flake8_and_pytest:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
