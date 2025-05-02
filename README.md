@@ -1,3 +1,5 @@
+![Tests](https://github.com/ivanov-dv/ff2_telegram_ui/actions/workflows/main.yml/badge.svg)
+
 # Family finance telegram user interface
 
 Микросервис для взаимодействия через Telegram интерфейс с пользователями сервиса Family Finance.
