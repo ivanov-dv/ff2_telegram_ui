@@ -5,6 +5,16 @@
 Микросервис для взаимодействия через Telegram интерфейс с пользователями сервиса Family Finance.
 ***
 
+## Применяемые библиотеки и технологии:
+- Python 3.12;
+- Aiogram;
+- Async-lru;
+- Pytest;
+- Poetry;
+- Docker;
+- Kubernetes;
+- CI/CD.
+
 ## Установка и запуск
 #### Для работы необходим запущенный [API сервис](https://github.com/ivanov-dv/family_finances_2).
 1. Клонируйте репозиторий.
